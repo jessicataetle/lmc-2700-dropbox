@@ -1,5 +1,6 @@
 var innerBox;
 var outerBox;
+var inBox = true;
 
 function startGame() {  
     myGameArea.start();
@@ -21,23 +22,44 @@ function checkKey(e) {
 
     if (e.keyCode == '38') {
         // up arrow
-        jump()
+        //jump()
     }
     else if (e.keyCode == '40') {
         // down arrow
     }
     else if (e.keyCode == '37') {
        // left arrow
-        if (outerBox.a > 0) {
-            outerBox.a = outerBox.a - 15;
-            innerBox.a = innerBox.a - 15;
+        if (inBox) {
+            if (outerBox.a > 0) {
+                outerBox.a = outerBox.a - 15;
+                innerBox.a = innerBox.a - 15;
+            }
+        } else {
+            if (innerBox.a > 0) {
+                innerBox.a = innerBox.a - 15;
+            }
         }
     }
     else if (e.keyCode == '39') {
        // right arrow
-        if (outerBox.a < (960 - outerBox.width)) {
-            outerBox.a = outerBox.a + 15;
-            innerBox.a = innerBox.a + 15;
+        if (inBox) {
+            if (outerBox.a < (960 - outerBox.width)) {
+                outerBox.a = outerBox.a + 15;
+                innerBox.a = innerBox.a + 15;
+            }
+        } else {
+            if (innerBox.a < (960 - innerBox.width)) {
+                innerBox.a = innerBox.a + 15;
+            }
+        }
+    } else if(e.keyCode == '88') {
+        //X
+        if(inBox) {
+            if(outerBox.a > 65) {
+                innerBox.a = outerBox.a - 50;
+                innerBox.b  = 490;
+                inBox = false;
+            }
         }
     }
 

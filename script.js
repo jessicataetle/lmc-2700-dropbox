@@ -3,8 +3,8 @@ var outerBox;
 
 function startGame() {  
     myGameArea.start();
-    outerBox = new component(100, 100, "orange", 10, 440)
-    innerBox = new component(50, 50, "blue", 35, 465)
+    outerBox = new component(100, 100, "orange", 0, 440)
+    innerBox = new component(50, 50, "blue", 25, 465)
     outerBox.update();
     innerBox.update();
 }
@@ -21,20 +21,35 @@ function checkKey(e) {
 
     if (e.keyCode == '38') {
         // up arrow
+        jump()
     }
     else if (e.keyCode == '40') {
         // down arrow
     }
     else if (e.keyCode == '37') {
        // left arrow
-        
+        if (outerBox.a > 0) {
+            outerBox.a = outerBox.a - 15;
+            innerBox.a = innerBox.a - 15;
+        }
     }
     else if (e.keyCode == '39') {
        // right arrow
-        outerBox.a = outerBox.a + 10;
-        innerBox.a = innerBox.a + 10;
+        if (outerBox.a < (960 - outerBox.width)) {
+            outerBox.a = outerBox.a + 15;
+            innerBox.a = innerBox.a + 15;
+        }
     }
 
+}
+
+function jump() {
+    counter = 0;
+    while(counter < 20) {
+        outerBox.b -= 1;
+        innerBox.b -= 1;
+        counter++;
+    }
 }
 
 function drawGame() {
@@ -64,6 +79,10 @@ function component(width, height, color, a, b) {
         ctx = myGameArea.context;  
         ctx.fillStyle = color;  
         ctx.fillRect(this.a, this.b, this.width, this.height);  
+    }
+    this.clear = function() {
+        ctx = myGameArea.context;
+        ctx.clearRect(this.a, this.b, this.width, this.height);  
     }  
 }
 

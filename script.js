@@ -5,11 +5,13 @@ var outerBoxMass = 20;
 var innterBoxMass = 10;
 var speed = 3;
 var gravity = 1;
+var canvasHeight = 540;
+var canvasWidth = 960;
 
 function startGame() {  
     myGameArea.start();
-    outerBox = new component(100, 100, "orange", 0, 440)
-    innerBox = new component(50, 50, "blue", 25, 465)
+    outerBox = new component(100, 100, "orange", 0, canvasHeight - 100)
+    innerBox = new component(50, 50, "blue", 25, canvasHeight - 75)
     outerBox.update();
     innerBox.update();
 }
@@ -23,10 +25,12 @@ function updateGame() {
 
 function checkKey(e) {
     e = e || window.event;
-
     if (e.keyCode == '38') {
         // up arrow
         //jump()
+        if(!inBox) {
+            innerBox.x = innerBox.x + 200;
+        }
     }
     else if (e.keyCode == '40') {
         // down arrow
@@ -39,7 +43,7 @@ function checkKey(e) {
                 innerBox.x = innerBox.x - 10;
             }
         } else {
-            if (innerBox.x > 0 && !innerBox.crashWith(outerBox)) {
+            if (innerBox.x > 0 && !innerBox.crashLeft(outerBox)) {
                 innerBox.x = innerBox.x - 10;
             }
         }
@@ -52,14 +56,14 @@ function checkKey(e) {
                 innerBox.x = innerBox.x + 10;
             }
         } else {
-            if (innerBox.x < (960 - innerBox.width) && !innerBox.crashWith(outerBox)) {
+            if (innerBox.x < (960 - innerBox.width) && !innerBox.crashRight(outerBox)) {
                 innerBox.x = innerBox.x + 10;
             }
         }
     } else if(e.keyCode == '88') {
-        //X
+        //X 
         if(inBox) {
-            if(outerBox.x > 65) {
+            if(outerBox.x > 50) {
                 innerBox.x = outerBox.x - 50;
                 innerBox.y = 490;
                 inBox = false;
@@ -79,8 +83,8 @@ function jump() {
 var myGameArea = {    
    canvas : document.createElement("canvas"),  
     start : function() {  
-        this.canvas.width = 960;  
-        this.canvas.height = 540;  
+        this.canvas.width = canvasWidth;  
+        this.canvas.height = canvasHeight;  
         this.context = this.canvas.getContext("2d");  
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.interval = setInterval(updateGame, 20);  
@@ -90,30 +94,20 @@ var myGameArea = {
     }  
 }
 
-function component(width, height, color, x, y, velocity) {  
+function component(width, height, color, x, y) {  
     this.width = width;  
     this.height = height;  
     this.x = x;  
     this.y = y;
-    this.velocity = velocity;
     this.update = function() {  
         ctx = myGameArea.context;  
         ctx.fillStyle = color;  
         ctx.fillRect(this.x, this.y, this.width, this.height);  
     }
-     this.crashWith = function(otherobj) {  
-        var myleft = this.x;  
-        var myright = this.x + (this.width);  
-        var mytop = this.y;  
-        var mybottom = this.y + (this.height);  
-        var otherleft = otherobj.x;  
-        var otherright = otherobj.x + (otherobj.width);  
-        var othertop = otherobj.y;  
-        var otherbottom = otherobj.y + (otherobj.height);  
-        var crash = true;  
-        if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft) || (myleft > otherright)) {  
-            crash = false;  
-        }  
-        return crash;  
-    }  
+    this.crashRight = function(otherobj) {
+       return ((this.x + this.width) >= otherobj.x) && (this.x < otherobj.x)
+    }
+     this.crashLeft = function(otherobj) {
+        return (this.x <= (otherobj.x + otherobj.width)) && (this.x > otherobj.x)
+    }
 }

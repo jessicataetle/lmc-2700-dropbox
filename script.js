@@ -1,12 +1,13 @@
 var innerBox;
 var outerBox;
 var inBox = true;
-var outerBoxMass = 20;
-var innterBoxMass = 10;
-var speed = 3;
-var gravity = 1;
 var canvasHeight = 540;
 var canvasWidth = 960;
+var jumping = false;
+var velX = 0;
+var velY = 0;
+var speed = 3;
+var jumpSpeed = 2;
 
 function startGame() {  
     myGameArea.start();
@@ -21,6 +22,7 @@ function updateGame() {
     document.onkeydown = checkKey;
     outerBox.update();
     innerBox.update();
+   // console.log(outerBox.y)
 }
 
 function checkKey(e) {
@@ -28,8 +30,9 @@ function checkKey(e) {
     if (e.keyCode == '38') {
         // up arrow
         //jump()
-        if(!inBox) {
-            innerBox.x = innerBox.x + 200;
+        if (!jumping) {
+            jumping = true;
+            velY = -20;
         }
     }
     else if (e.keyCode == '40') {
@@ -87,7 +90,7 @@ var myGameArea = {
         this.canvas.height = canvasHeight;  
         this.context = this.canvas.getContext("2d");  
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-        this.interval = setInterval(updateGame, 20);  
+        this.interval = setInterval(updateGame, 100);  
     },
     clear : function() {  
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);  
@@ -99,7 +102,16 @@ function component(width, height, color, x, y) {
     this.height = height;  
     this.x = x;  
     this.y = y;
-    this.update = function() {  
+    this.update = function() {
+        if (jumping) {
+            if((this.y + this.height) <= 540) {
+                this.y = velY + this.y;
+                velY++;
+            } else {
+                jumping = false;
+                velY = 0;
+            }
+        }
         ctx = myGameArea.context;  
         ctx.fillStyle = color;  
         ctx.fillRect(this.x, this.y, this.width, this.height);  

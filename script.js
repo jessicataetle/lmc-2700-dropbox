@@ -19,7 +19,7 @@ function startGame() {
 
 function updateGame() {
     myGameArea.clear();
-    document.onkeydown = checkKey;
+    document.onkeydown = checkKey.checkKey;
     if (jumping) {
         jump()
     }
@@ -28,14 +28,19 @@ function updateGame() {
    // console.log(outerBox.y)
 }
 
-function checkKey(e) {
+var checkKey = {
+    checkKey: function(e) {
     e = e || window.event;
     if (e.keyCode == '38') {
         // up arrow
         //jump()
         if (!jumping) {
             jumping = true;
-            velY = -20;
+            if (inBox) {
+                velY = -10;
+            } else {
+                velY = -20;
+            }
         }
     }
     else if (e.keyCode == '40') {
@@ -62,9 +67,9 @@ function checkKey(e) {
                 innerBox.x = innerBox.x + 10;
             }
         } else {
-            if (innerBox.x < (960 - innerBox.width) && !innerBox.crashRight(outerBox)) {
-                innerBox.x = innerBox.x + 10;
-            }
+                 if (innerBox.x < (960 - innerBox.width) && !innerBox.crashRight(outerBox)) {
+                    innerBox.x = innerBox.x + 10;
+                }
         }
     } else if(e.keyCode == '88') {
         //X 
@@ -82,16 +87,28 @@ function checkKey(e) {
     }
 
 }
+}
 
 function jump() {
-    if((outerBox.y + outerBox.height + velY) <= 540) {
-        outerBox.y = velY + outerBox.y;
-        innerBox.y = outerBox.y + 25;
-        velY++;
+    if (inBox) {
+        if((outerBox.y + outerBox.height + velY) <= 540) {
+            outerBox.y = velY + outerBox.y;
+            innerBox.y = outerBox.y + 25;
+            velY++;
+        } else {
+            jumping = false;
+            velY = 0;
+            outerBox.y = canvasHeight - 100;
+        }
     } else {
-        jumping = false;
-        velY = 0;
-        outerBox.y = canvasHeight - 100;
+        if((innerBox.y + innerBox.height + velY <= 540) || (innerBox.y + innerBox.height) <= outerBox.height) {
+            innerBox.y = velY + innerBox.y;
+            velY++;
+        } else {
+            jumping = false;
+            velY = 0;
+            innerBox.y = canvasHeight - 50
+        }
     }
 }
   

@@ -1,6 +1,10 @@
 var innerBox;
 var outerBox;
 var inBox = true;
+var outerBoxMass = 20;
+var innterBoxMass = 10;
+var speed = 3;
+var gravity = 1;
 
 function startGame() {  
     myGameArea.start();
@@ -30,52 +34,46 @@ function checkKey(e) {
     else if (e.keyCode == '37') {
        // left arrow
         if (inBox) {
-            if (outerBox.a > 0) {
-                outerBox.a = outerBox.a - 15;
-                innerBox.a = innerBox.a - 15;
+            if (outerBox.x > 0) {
+                outerBox.x = outerBox.x - 10;
+                innerBox.x = innerBox.x - 10;
             }
         } else {
-            if (innerBox.a > 0) {
-                innerBox.a = innerBox.a - 15;
+            if (innerBox.x > 0 && !innerBox.crashWith(outerBox)) {
+                innerBox.x = innerBox.x - 10;
             }
         }
     }
     else if (e.keyCode == '39') {
        // right arrow
         if (inBox) {
-            if (outerBox.a < (960 - outerBox.width)) {
-                outerBox.a = outerBox.a + 15;
-                innerBox.a = innerBox.a + 15;
+            if (outerBox.x < (960 - outerBox.width)) {
+                outerBox.x = outerBox.x + 10;
+                innerBox.x = innerBox.x + 10;
             }
         } else {
-            if (innerBox.a < (960 - innerBox.width)) {
-                innerBox.a = innerBox.a + 15;
+            if (innerBox.x < (960 - innerBox.width) && !innerBox.crashWith(outerBox)) {
+                innerBox.x = innerBox.x + 10;
             }
         }
     } else if(e.keyCode == '88') {
         //X
         if(inBox) {
-            if(outerBox.a > 65) {
-                innerBox.a = outerBox.a - 50;
-                innerBox.b  = 490;
+            if(outerBox.x > 65) {
+                innerBox.x = outerBox.x - 50;
+                innerBox.y = 490;
                 inBox = false;
             }
+        } else {
+            innerBox.x = outerBox.x + 25;
+            innerBox.y = outerBox.y + 25;
+            inBox = true;
         }
     }
 
 }
 
 function jump() {
-    counter = 0;
-    while(counter < 20) {
-        outerBox.b -= 1;
-        innerBox.b -= 1;
-        counter++;
-    }
-}
-
-function drawGame() {
-    
 }
   
 var myGameArea = {    
@@ -92,29 +90,30 @@ var myGameArea = {
     }  
 }
 
-function component(width, height, color, a, b) {  
-    this.width = width;  
-    this.height = height;  
-    this.a = a;  
-    this.b = b;      
-    this.update = function() {  
-        ctx = myGameArea.context;  
-        ctx.fillStyle = color;  
-        ctx.fillRect(this.a, this.b, this.width, this.height);  
-    }
-    this.clear = function() {
-        ctx = myGameArea.context;
-        ctx.clearRect(this.a, this.b, this.width, this.height);  
-    }  
-}
-
-function drawOuterBox(width, height, color, x, y) {  
+function component(width, height, color, x, y, velocity) {  
     this.width = width;  
     this.height = height;  
     this.x = x;  
-    this.y = y;      
-    ctx = myGameArea.context;  
-    ctx.fillStyle = color;
-    ctx.lineWidth = 40;
-    ctx.strokeRect(this.x, this.y, this.width, this.height);  
-}  
+    this.y = y;
+    this.velocity = velocity;
+    this.update = function() {  
+        ctx = myGameArea.context;  
+        ctx.fillStyle = color;  
+        ctx.fillRect(this.x, this.y, this.width, this.height);  
+    }
+     this.crashWith = function(otherobj) {  
+        var myleft = this.x;  
+        var myright = this.x + (this.width);  
+        var mytop = this.y;  
+        var mybottom = this.y + (this.height);  
+        var otherleft = otherobj.x;  
+        var otherright = otherobj.x + (otherobj.width);  
+        var othertop = otherobj.y;  
+        var otherbottom = otherobj.y + (otherobj.height);  
+        var crash = true;  
+        if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft) || (myleft > otherright)) {  
+            crash = false;  
+        }  
+        return crash;  
+    }  
+}

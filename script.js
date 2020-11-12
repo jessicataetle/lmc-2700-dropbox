@@ -1,14 +1,61 @@
 var innerBox;
 var outerBox;
+var startButton;
 var inBox = true;
 var canvasHeight = 540;
 var canvasWidth = 960;
 var jumping = false;
 var velX = 0;
 var velY = 0;
+const state = {
+    MENU: 'menu',
+    GAME: 'game',
+}
 
-function startGame() {  
-    myGameArea.start();
+var stateMachine = {
+    interval: '',
+    currState: '',
+    stateMachine: function(state, change) {
+        if (change) {
+            clearInterval(this.interval)
+        }
+        switch(state) {
+            case 'game':
+                this.currState = state;
+                this.interval = setInterval(updateGame, 20)
+                break;
+            case 'menu':
+                this.currState = state;
+                this.interval = setInterval(menu, 20)
+                break;
+        }
+    }
+}
+
+function onLoad() {
+    myGameArea.setup();
+    //myGameArea.menu();
+    startButton = new component(200, 100, "pink", (canvasWidth / 2) - 100, (canvasHeight / 2) - 50, "button", "start");
+    stateMachine.stateMachine(state.MENU, false)
+    if(stateMachine.currState == "menu") {
+         myGameArea.canvas.onmousedown = goToStart
+    } else {
+        console.log('hey')
+    }
+}
+
+function goToStart() {
+    startGame();
+    stateMachine.stateMachine(state.GAME, true)
+    console.log(stateMachine.currState)
+}
+
+function menu() {
+    startButton.update();
+}
+
+function startGame() {
+    myGameArea.clear();
     outerBox = new outerBox(100, 100, "orange", 0, canvasHeight - 100)
     innerBox = new innerBox(50, 50, "blue", 25, canvasHeight - 75)
     outerBox.update();
@@ -24,7 +71,6 @@ function updateGame() {
     }
     outerBox.update();
     innerBox.update();
-   // console.log(outerBox.y)
 }
 
 function updateVel(object) {
@@ -124,7 +170,6 @@ function jump() {
             } else {
                 jumping = false;
                 velY = 0;
-                //innerBox.y = canvasHeight - 50
             }
         }
     }
@@ -132,13 +177,17 @@ function jump() {
   
 var myGameArea = {    
    canvas : document.createElement("canvas"),  
-    start : function() {  
+    setup : function() {  
         this.canvas.width = canvasWidth;  
         this.canvas.height = canvasHeight;  
         this.context = this.canvas.getContext("2d");  
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-        this.interval = setInterval(updateGame, 20);  
     },
+    start : function(state) {
+        //startGame();
+        //clearInterval(this.interval);
+        //this.interval = setInterval(stateMachine(state), 20);  
+    }, 
     clear : function() {  
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);  
     }  
@@ -196,5 +245,18 @@ function innerBox(width, height, color, x, y) {
     }
     this.crashDown = function(otherobj) {
         return (this.y + this.height >= otherobj.y) && ((this.x + this.width > otherobj.x) && (this.x < otherobj.x + otherobj.width))
-    }
+    }    
 }
+
+function component(width, height, color, x, y, type, text) {   
+    this.width = width;  
+    this.height = height;      
+    this.x = x;  
+    this.y = y;
+    this.type = type;
+    this.update = function() {  
+        ctx = myGameArea.context;    
+        ctx.fillStyle = color;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+    }  
+}  

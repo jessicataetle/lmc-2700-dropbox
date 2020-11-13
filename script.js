@@ -14,18 +14,15 @@ const state = {
 
 var stateMachine = {
     interval: '',
-    currState: '',
     stateMachine: function(state, change) {
         if (change) {
             clearInterval(this.interval)
         }
         switch(state) {
             case 'game':
-                this.currState = state;
                 this.interval = setInterval(updateGame, 20)
                 break;
             case 'menu':
-                this.currState = state;
                 this.interval = setInterval(menu, 20)
                 break;
         }
@@ -34,7 +31,6 @@ var stateMachine = {
 
 function onLoad() {
     myGameArea.setup();
-    //myGameArea.menu();
     startButton = new component(200, 100, "pink", (canvasWidth / 2) - 100, (canvasHeight / 2) - 50, "button", "start");
     stateMachine.stateMachine(state.MENU, false)
     myGameArea.canvas.addEventListener('click',  goToStart , { once: true })
@@ -51,7 +47,7 @@ function menu() {
 
 function startGame() {
     myGameArea.clear();
-    outerBox = new outerBox(100, 100, "orange", 0, canvasHeight - 100)
+    outerBox = new outerBox(100, 100, "orange", 0, canvasHeight - 100, false)
     innerBox = new innerBox(50, 50, "blue", 25, canvasHeight - 75)
     outerBox.update();
     innerBox.update();
@@ -77,6 +73,9 @@ function updateVel(object) {
     if (checkKey.left) {
         if (object.crashLeft(outerBox)) {
             object.x = outerBox.x + outerBox.width;
+        } else if (outerBox.isActive && object.x + object.width < outerBox.x) {
+            jumping = true;
+            outerBox.isActive = false;
         } else {
             velX -= object.velX
             object.x += velX; 
@@ -86,7 +85,10 @@ function updateVel(object) {
     if (checkKey.right) {
         if (object.crashRight(outerBox)) {
             object.x = outerBox.x - object.width;
-       } else {
+        } else if (outerBox.isActive && object.x > outerBox.x + outerBox.width) {
+                jumping = true;
+                outerBox.isActive = false;
+        } else {
             velX += object.velX
             object.x += velX; 
         }
@@ -136,6 +138,7 @@ var checkKey = {
                 innerBox.x = outerBox.x + 25;
                 innerBox.y = outerBox.y + 25;
                 inBox = true;
+                outerBox.isActive = false;
             }
         }
     }
@@ -156,6 +159,7 @@ function jump() {
     } else {
         if(innerBox.crashDown(outerBox)) {
             innerBox.y = canvasHeight - outerBox.height - innerBox.height
+            outerBox.isActive = true;
             velY = 0;
             jumping = false;
         } else {
@@ -165,10 +169,28 @@ function jump() {
             } else {
                 jumping = false;
                 velY = 0;
+                innerBox.y = canvasHeight - innerBox.height
             }
         }
     }
 }
+
+//function fall() {
+//    if(innerBox.crashDown(outerBox)) {
+//        innerBox.y = canvasHeight - outerBox.height - innerBox.height
+//        outerBox.isActive = true;
+//        velY = 0;
+//        falling = false;
+//    } else {
+//        if((innerBox.y + innerBox.height + velY <= 540)) {
+//            innerBox.y = velY + innerBox.y;
+//            velY++;
+//        } else {
+//            falling = false;
+//            velY = 0;
+//        }
+//    }
+//}
   
 var myGameArea = {    
    canvas : document.createElement("canvas"),  
@@ -178,23 +200,19 @@ var myGameArea = {
         this.context = this.canvas.getContext("2d");  
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
     },
-    start : function(state) {
-        //startGame();
-        //clearInterval(this.interval);
-        //this.interval = setInterval(stateMachine(state), 20);  
-    }, 
     clear : function() {  
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);  
     }  
 }
 
-function outerBox(width, height, color, x, y) {  
+function outerBox(width, height, color, x, y, isActive) {  
     this.width = width;  
     this.height = height;  
     this.x = x;  
     this.y = y;
     this.velX = 0.5;
     this.velY = 10;
+    this.isActive = isActive;
     this.update = function() {
         if (inBox) {
             updateVel(outerBox);

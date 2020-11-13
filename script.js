@@ -12,6 +12,7 @@ const state = {
     GAME: 'game',
 }
 
+//state machins
 var stateMachine = {
     interval: '',
     stateMachine: function(state, change) {
@@ -20,53 +21,59 @@ var stateMachine = {
         }
         switch(state) {
             case 'game':
-                this.interval = setInterval(updateGame, 20)
+                this.interval = setInterval(game, 20)
                 break;
             case 'menu':
-                this.interval = setInterval(menu, 20)
+                this.interval = setInterval(start, 20)
                 break;
         }
     }
 }
 
+//start screen
 function onLoad() {
     myGameArea.setup();
     startButton = new component(200, 100, "pink", (canvasWidth / 2) - 100, (canvasHeight / 2) - 50, "button", "start");
     stateMachine.stateMachine(state.MENU, false)
-    myGameArea.canvas.addEventListener('click',  goToStart , { once: true })
+    myGameArea.canvas.addEventListener('click',  goToGame , { once: true })
 }
 
-function goToStart() {
-    stateMachine.stateMachine(state.GAME, true)
-    startGame();
-}
-
-function menu() {
+//start loop
+function start() {
     startButton.update();
 }
 
-function startGame() {
+//start -> game
+function goToGame() {
+    stateMachine.stateMachine(state.GAME, true)
+    initGame();
+}
+
+//initializes game
+function initGame() {
     myGameArea.clear();
     outerBox = new outerBox(100, 100, "orange", 0, canvasHeight - 100, false)
     innerBox = new innerBox(50, 50, "blue", 25, canvasHeight - 75)
-    outerBox.update();
-    innerBox.update();
+    outerBox.updateAndDraw();
+    innerBox.updateAndDraw();
 }
 
-function updateGame() {
+//game loop
+function game() {
     myGameArea.clear();
     document.onkeydown = checkKey.checkKey;
     document.onkeyup = checkKey.checkKey;
     if (jumping) {
         jump()
     }
-    outerBox.update();
-    innerBox.update();
+    outerBox.updateAndDraw();
+    innerBox.updateAndDraw();
 }
 
+//update velocity function
 function updateVel(object) {
-    if (checkKey.up && jumping == false) {
-        velY -= object.velY;
+    if (checkKey.up && !jumping) {
+        velY -= object.velY; //change so same velocity
         jumping = true;
     }
 
@@ -106,8 +113,7 @@ function updateVel(object) {
     }
 }
 
-
-
+//check key inputs
 var checkKey = {
     left: false,
     right: false,
@@ -135,6 +141,7 @@ var checkKey = {
                     inBox = false;
                 }
             } else {
+                if(innerBox.x - outerBox.x)
                 innerBox.x = outerBox.x + 25;
                 innerBox.y = outerBox.y + 25;
                 inBox = true;
@@ -144,6 +151,7 @@ var checkKey = {
     }
 }
 
+//jump / gravity function
 function jump() {
     if (inBox) {
         if((outerBox.y + outerBox.height + velY) <= 540) {
@@ -193,10 +201,10 @@ function outerBox(width, height, color, x, y, isActive) {
     this.height = height;  
     this.x = x;  
     this.y = y;
-    this.velX = 0.5;
-    this.velY = 10;
+    this.velX = 1;
+    this.velY = 15;
     this.isActive = isActive;
-    this.update = function() {
+    this.updateAndDraw = function() {
         if (inBox) {
             updateVel(outerBox);
         }
@@ -221,8 +229,8 @@ function innerBox(width, height, color, x, y) {
     this.x = x;  
     this.y = y;
     this.velX = 1;
-    this.velY = 20;
-    this.update = function() {
+    this.velY = 15;
+    this.updateAndDraw = function() {
         if(inBox) {
             this.x = outerBox.x + 25;
             this.y = outerBox.y + 25;

@@ -174,23 +174,6 @@ function jump() {
         }
     }
 }
-
-//function fall() {
-//    if(innerBox.crashDown(outerBox)) {
-//        innerBox.y = canvasHeight - outerBox.height - innerBox.height
-//        outerBox.isActive = true;
-//        velY = 0;
-//        falling = false;
-//    } else {
-//        if((innerBox.y + innerBox.height + velY <= 540)) {
-//            innerBox.y = velY + innerBox.y;
-//            velY++;
-//        } else {
-//            falling = false;
-//            velY = 0;
-//        }
-//    }
-//}
   
 var myGameArea = {    
    canvas : document.createElement("canvas"),  

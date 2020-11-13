@@ -37,17 +37,12 @@ function onLoad() {
     //myGameArea.menu();
     startButton = new component(200, 100, "pink", (canvasWidth / 2) - 100, (canvasHeight / 2) - 50, "button", "start");
     stateMachine.stateMachine(state.MENU, false)
-    if(stateMachine.currState == "menu") {
-         myGameArea.canvas.onmousedown = goToStart
-    } else {
-        console.log('hey')
-    }
+    myGameArea.canvas.addEventListener('click',  goToStart , { once: true })
 }
 
 function goToStart() {
-    startGame();
     stateMachine.stateMachine(state.GAME, true)
-    console.log(stateMachine.currState)
+    startGame();
 }
 
 function menu() {
@@ -129,7 +124,7 @@ var checkKey = {
                 checkKey.right = key_state;
                 break;
         }
-        if (e.keyCode == '88' && e.type == "keydown") {//X 
+        if (e.keyCode == '88' && e.type == "keydown" && !jumping) {//X 
             if(inBox) {
                 if(outerBox.x > 50) {
                     innerBox.x = outerBox.x - 50;

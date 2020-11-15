@@ -1,7 +1,8 @@
-var innerBox;
-var outerBox;
+var astronaut;
+var backpack;
 var startButton;
-var inBox = true;
+var onBack = true;
+var dropBox = false;
 var canvasHeight = 540;
 var canvasWidth = 960;
 var jumping = false;
@@ -11,6 +12,8 @@ const state = {
     MENU: 'menu',
     GAME: 'game',
 }
+var prevDirection = 'right'
+
 
 //state machins
 var stateMachine = {
@@ -52,10 +55,10 @@ function goToGame() {
 //initializes game
 function initGame() {
     myGameArea.clear();
-    outerBox = new outerBox(100, 100, "orange", 0, canvasHeight - 100, false)
-    innerBox = new innerBox(50, 50, "blue", 25, canvasHeight - 75)
-    outerBox.updateAndDraw();
-    innerBox.updateAndDraw();
+    backpack = new backpack(50, 100, "orange", 0, canvasHeight - 150, false)
+    astronaut = new astronaut(50, 100, "blue", 50, canvasHeight - 100)
+    astronaut.updateAndDraw();
+    backpack.updateAndDraw();
 }
 
 //game loop
@@ -66,23 +69,22 @@ function game() {
     if (jumping) {
         jump()
     }
-    outerBox.updateAndDraw();
-    innerBox.updateAndDraw();
+    backpack.updateAndDraw();
+    astronaut.updateAndDraw();
 }
 
 //update velocity function
-function updateVel(object) {
+function updateVelAstronaut(object) {
     if (checkKey.up && !jumping) {
         velY -= object.velY; //change so same velocity
         jumping = true;
     }
-
     if (checkKey.left) {
-        if (object.crashLeft(outerBox)) {
-            object.x = outerBox.x + outerBox.width;
-        } else if (outerBox.isActive && object.x + object.width < outerBox.x) {
+        if (object.crashLeft(backpack)) {
+            object.x = backpack.x + backpack.width;
+        } else if (backpack.isActive && object.x + object.width < backpack.x) {
             jumping = true;
-            outerBox.isActive = false;
+            backpack.isActive = false;
         } else {
             velX -= object.velX
             object.x += velX; 
@@ -90,11 +92,11 @@ function updateVel(object) {
     }
 
     if (checkKey.right) {
-        if (object.crashRight(outerBox)) {
-            object.x = outerBox.x - object.width;
-        } else if (outerBox.isActive && object.x > outerBox.x + outerBox.width) {
+        if (object.crashRight(backpack)) {
+            object.x = backpack.x - object.width;
+        } else if (backpack.isActive && object.x > backpack.x + backpack.width) {
                 jumping = true;
-                outerBox.isActive = false;
+                backpack.isActive = false;
         } else {
             velX += object.velX
             object.x += velX; 
@@ -112,6 +114,41 @@ function updateVel(object) {
         object.x = canvasWidth - object.width
     }
 }
+
+function updateVelBackPack() {
+    if (checkKey.up && !jumping) {
+        velY -= astronaut.velY; //change so same velocity
+        jumping = true;
+    }
+    if (checkKey.left) {
+        backpack.x = astronaut.x + astronaut.width + velX;
+        if (astronaut.x == canvasWidth - backpack.width) {
+            backpack.x = canvasWidth - backpack.width
+            astronaut.x = canvasWidth - (astronaut.width * 2)
+        }
+    }
+
+    if (checkKey.right) {
+        backpack.x = astronaut.x - backpack.width + velX;
+        changeDirections('right');
+        if (astronaut.x == 0) {
+            backpack.x = 0;
+            astronaut.x = backpack.width
+        }
+    }
+    backpack.y += velY;
+    //velX *= 0.9;// friction
+    //velY *= 0.9;// friction
+    if (backpack.x < 0) {
+        velX = 0;
+        backpack.x = 0;
+    }
+    if (backpack.x + backpack.width > canvasWidth) {
+        velX = 0;
+        backpack.x = canvasWidth - backpack.width
+    }
+}
+
 
 //check key inputs
 var checkKey = {
@@ -133,51 +170,71 @@ var checkKey = {
                 break;
         }
         if (e.keyCode == '88' && e.type == "keydown" && !jumping) {//X 
-            if(inBox) {
-                if(outerBox.x > 50) {
-                    innerBox.x = outerBox.x - 50;
-                    innerBox.y = 490;
-                    velX = 0;
-                    inBox = false;
-                }
+            if(onBack) {
+                velX = 0;
+                onBack = false;
+                dropBox = true;
+                jumping = true;
             } else {
-                if(innerBox.x - outerBox.x)
-                innerBox.x = outerBox.x + 25;
-                innerBox.y = outerBox.y + 25;
-                inBox = true;
-                outerBox.isActive = false;
+                astronaut.x = backpack.x + 25;
+                astronaut.y = backpack.y + 25;
+                onBack = true;
+                backpack.isActive = false;
             }
         }
+    }
+}
+
+//check to see if backpack needs to change locations
+function changeDirections(newDirection) {
+    if(newDirection != prevDirection) {
+        if(astronaut.x <= 0) {
+            
+        }
+        backpack.x = astronaut.x + astronaut.width
+        prevDirection = newDirection
     }
 }
 
 //jump / gravity function
 function jump() {
     if (inBox) {
-        if((outerBox.y + outerBox.height + velY) <= 540) {
+        if((outerBox.y + outerBox.height + velY) <= 490) {
             outerBox.y = velY + outerBox.y;
-            innerBox.y = outerBox.y + 25;
+            innerBox.y = outerBox.y + 50;
             velY++;
         } else {
             jumping = false;
             velY = 0;
-            outerBox.y = canvasHeight - 100;
-            innerBox.y = outerBox.y + 25;
+            outerBox.y = canvasHeight - 150;
+            innerBox.y = outerBox.y + 50;
         }
     } else {
-        if(innerBox.crashDown(outerBox)) {
-            innerBox.y = canvasHeight - outerBox.height - innerBox.height
-            outerBox.isActive = true;
-            velY = 0;
-            jumping = false;
-        } else {
-            if((innerBox.y + innerBox.height + velY <= 540)) {
-                innerBox.y = velY + innerBox.y;
+        if(dropBox) {
+            if ((backpack.y + backpack.height + velY) <= 540) {
+                backpack.y = velY + backpack.y;
                 velY++;
             } else {
                 jumping = false;
+                dropBox = false;
                 velY = 0;
-                innerBox.y = canvasHeight - innerBox.height
+                backpack.y = canvasHeight - backpack.height;
+            }
+        } else {
+            if(astronaut.crashDown(backpack)) {
+                astronaut.y = canvasHeight - backpack.height - astronaut.height
+                backpack.isActive = true;
+                velY = 0;
+                jumping = false;
+            } else {
+                if((astronaut.y + astronaut.height + velY <= 540)) {
+                    astronaut.y = velY + astronaut.y;
+                    velY++;
+                } else {
+                    jumping = false;
+                    velY = 0;
+                    astronaut.y = canvasHeight - astronaut.height
+                }
             }
         }
     }
@@ -196,17 +253,15 @@ var myGameArea = {
     }  
 }
 
-function outerBox(width, height, color, x, y, isActive) {  
+function backpack(width, height, color, x, y, isActive) {  
     this.width = width;  
     this.height = height;  
     this.x = x;  
     this.y = y;
-    this.velX = 1;
-    this.velY = 15;
     this.isActive = isActive;
     this.updateAndDraw = function() {
-        if (inBox) {
-            updateVel(outerBox);
+        if (onBack) {
+            updateVelBackPack()
         }
         ctx = myGameArea.context;  
         ctx.fillStyle = color;  
@@ -223,7 +278,7 @@ function outerBox(width, height, color, x, y, isActive) {
     }
 }
 
-function innerBox(width, height, color, x, y) {  
+function astronaut(width, height, color, x, y) {  
     this.width = width;  
     this.height = height;  
     this.x = x;  
@@ -231,12 +286,7 @@ function innerBox(width, height, color, x, y) {
     this.velX = 1;
     this.velY = 15;
     this.updateAndDraw = function() {
-        if(inBox) {
-            this.x = outerBox.x + 25;
-            this.y = outerBox.y + 25;
-        } else {
-            updateVel(innerBox)
-        }
+        updateVelAstronaut(astronaut);
         ctx = myGameArea.context;  
         ctx.fillStyle = color;  
         ctx.fillRect(this.x, this.y, this.width, this.height);  
@@ -258,7 +308,7 @@ function component(width, height, color, x, y, type, text) {
     this.x = x;  
     this.y = y;
     this.type = type;
-    this.update = function() {  
+    this.update = function() {
         ctx = myGameArea.context;    
         ctx.fillStyle = color;
         ctx.fillRect(this.x, this.y, this.width, this.height);

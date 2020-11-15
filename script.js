@@ -83,8 +83,8 @@ function updateVelAstronaut(object) {
         if (object.crashLeft(backpack)) {
             object.x = backpack.x + backpack.width;
         } else if (backpack.isActive && object.x + object.width < backpack.x) {
-            jumping = true;
-            backpack.isActive = false;
+//            jumping = true;
+//            backpack.isActive = false;
         } else {
             velX -= object.velX
             object.x += velX; 
@@ -95,8 +95,8 @@ function updateVelAstronaut(object) {
         if (object.crashRight(backpack)) {
             object.x = backpack.x - object.width;
         } else if (backpack.isActive && object.x > backpack.x + backpack.width) {
-                jumping = true;
-                backpack.isActive = false;
+//                jumping = true;
+//                backpack.isActive = false;
         } else {
             velX += object.velX
             object.x += velX; 
@@ -116,10 +116,6 @@ function updateVelAstronaut(object) {
 }
 
 function updateVelBackPack() {
-    if (checkKey.up && !jumping) {
-        velY -= astronaut.velY; //change so same velocity
-        jumping = true;
-    }
     if (checkKey.left) {
         backpack.x = astronaut.x + astronaut.width + velX;
         if (astronaut.x == canvasWidth - backpack.width) {
@@ -172,12 +168,14 @@ var checkKey = {
         if (e.keyCode == '88' && e.type == "keydown" && !jumping) {//X 
             if(onBack) {
                 velX = 0;
-                onBack = false;
-                dropBox = true;
-                jumping = true;
+                backpack.y = canvasHeight - backpack.height
+                onBack = false
+//                onBack = false;
+//                dropBox = true;
+//                jumping = true;
             } else {
-                astronaut.x = backpack.x + 25;
-                astronaut.y = backpack.y + 25;
+                backpack.x = astronaut.x + astronaut.width 
+                backpack.y = astronaut.y - 50;
                 onBack = true;
                 backpack.isActive = false;
             }
@@ -198,47 +196,79 @@ function changeDirections(newDirection) {
 
 //jump / gravity function
 function jump() {
-    if (inBox) {
-        if((outerBox.y + outerBox.height + velY) <= 490) {
-            outerBox.y = velY + outerBox.y;
-            innerBox.y = outerBox.y + 50;
+    if (onBack) {
+        if ((astronaut.y + astronaut.height + velY) <= canvasHeight) {
+            astronaut.y = velY + astronaut.y;
+            backpack.y = astronaut.y - 50;
             velY++;
         } else {
             jumping = false;
             velY = 0;
-            outerBox.y = canvasHeight - 150;
-            innerBox.y = outerBox.y + 50;
+            astronaut.y = canvasHeight - astronaut.height;
+            backpack.y = astronaut.y - 50;
         }
     } else {
-        if(dropBox) {
-            if ((backpack.y + backpack.height + velY) <= 540) {
-                backpack.y = velY + backpack.y;
+        if(astronaut.crashDown(backpack)) {
+            astronaut.y = canvasHeight - backpack.height - astronaut.height
+            backpack.isActive = true;
+            velY = 0;
+            jumping = false;
+        } else {
+            if((astronaut.y + astronaut.height + velY <= canvasHeight)) {
+                astronaut.y = velY + astronaut.y;
                 velY++;
             } else {
                 jumping = false;
-                dropBox = false;
                 velY = 0;
-                backpack.y = canvasHeight - backpack.height;
-            }
-        } else {
-            if(astronaut.crashDown(backpack)) {
-                astronaut.y = canvasHeight - backpack.height - astronaut.height
-                backpack.isActive = true;
-                velY = 0;
-                jumping = false;
-            } else {
-                if((astronaut.y + astronaut.height + velY <= 540)) {
-                    astronaut.y = velY + astronaut.y;
-                    velY++;
-                } else {
-                    jumping = false;
-                    velY = 0;
-                    astronaut.y = canvasHeight - astronaut.height
-                }
+                astronaut.y = canvasHeight - astronaut.height
             }
         }
     }
+
 }
+
+//function jump() {
+//    if (inBox) {
+//        if((outerBox.y + outerBox.height + velY) <= 490) {
+//            outerBox.y = velY + outerBox.y;
+//            innerBox.y = outerBox.y + 50;
+//            velY++;
+//        } else {
+//            jumping = false;
+//            velY = 0;
+//            outerBox.y = canvasHeight - 150;
+//            innerBox.y = outerBox.y + 50;
+//        }
+//    } else {
+//        if(dropBox) {
+//            if ((backpack.y + backpack.height + velY) <= 540) {
+//                backpack.y = velY + backpack.y;
+//                velY++;
+//            } else {
+//                jumping = false;
+//                dropBox = false;
+//                velY = 0;
+//                backpack.y = canvasHeight - backpack.height;
+//            }
+//        } else {
+//            if(astronaut.crashDown(backpack)) {
+//                astronaut.y = canvasHeight - backpack.height - astronaut.height
+//                backpack.isActive = true;
+//                velY = 0;
+//                jumping = false;
+//            } else {
+//                if((astronaut.y + astronaut.height + velY <= 540)) {
+//                    astronaut.y = velY + astronaut.y;
+//                    velY++;
+//                } else {
+//                    jumping = false;
+//                    velY = 0;
+//                    astronaut.y = canvasHeight - astronaut.height
+//                }
+//            }
+//        }
+//    }
+//}
   
 var myGameArea = {    
    canvas : document.createElement("canvas"),  

@@ -116,18 +116,17 @@ function updateVelAstronaut() {
 
 function updateVelBackPack() {
     if (checkKey.left) {
-        backpack.x = astronaut.x + astronaut.width + velX;
-        if (astronaut.x == canvasWidth - backpack.width) {
+        backpack.x = astronaut.x + astronaut.width + velX - 1;
+        if (astronaut.x >= canvasWidth - backpack.width * 2) {
             backpack.x = canvasWidth - backpack.width
             astronaut.x = canvasWidth - (astronaut.width * 2)
         }
     }
 
     if (checkKey.right) {
-        backpack.x =  astronaut.x - backpack.width + velX;
-        changeDirections('right');
-        if (astronaut.x == 0) {
-            backpack.x = 0;
+        backpack.x =  astronaut.x - backpack.width + velX + 1;
+        if (astronaut.x <= backpack.width) {
+            backpack.x = astronaut.x;
             astronaut.x = backpack.width
         }
     }

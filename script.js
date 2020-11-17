@@ -4,10 +4,12 @@ var startButton;
 var onBack = true;
 var dropBox = false;
 var canvasHeight = 540;
-var canvasWidth = 960;
+var canvasWidth = 1000;
 var jumping = false;
 var velX = 0;
 var velY = 0;
+var level = [];
+var newLevel;
 const state = {
     MENU: 'menu',
     GAME: 'game',
@@ -35,14 +37,13 @@ var stateMachine = {
 //start screen
 function onLoad() {
     myGameArea.setup();
-    startButton = new component(200, 100, "pink", (canvasWidth / 2) - 100, (canvasHeight / 2) - 50, "button", "start");
     stateMachine.stateMachine(state.MENU, false)
     myGameArea.canvas.addEventListener('click',  goToGame , { once: true })
 }
 
 //start loop
 function start() {
-    startButton.update();
+
 }
 
 //start -> game
@@ -54,10 +55,26 @@ function goToGame() {
 //initializes game
 function initGame() {
     myGameArea.clear();
-    backpack = new backpack(50, 100, "orange", 0, canvasHeight - 150, false)
-    astronaut = new astronaut(50, 100, "blue", 50, canvasHeight - 100)
+    backpack = new backpack(50, 100, "orange", 0, canvasHeight - 200, false)
+    astronaut = new astronaut(50, 100, "blue", 50, canvasHeight - 150)
+    initLevels();
     astronaut.updateAndDraw();
     backpack.updateAndDraw();
+}
+
+function initLevels() {
+    var x = 0;
+    var i = 0;
+    //floor
+    while (x < canvasWidth) {
+        level.push(new levelA(100, 50, "purple", x, canvasHeight - 50, false))
+        x += 100;
+    }
+    //bump
+    level.push(new levelA(300, 300, "purple", canvasWidth / 2 - 150, canvasHeight - 300, false))
+    for(var i = 0; i < level.length; i++) {
+        level[i].draw();
+    }
 }
 
 //game loop
@@ -70,6 +87,18 @@ function game() {
     }
     backpack.updateAndDraw();
     astronaut.updateAndDraw();
+    updateAndDrawLevels()
+}
+
+function updateAndDrawLevels() {
+    for(var i = 0; i < level.length; i++) {
+        if(astronaut.x > level[i].x && astronaut.x + astronaut.width < level[i].x + level[i].width) {
+            level[i].isActive = true;
+        } else {
+            level[i].isActive = false;
+        }
+        level[i].draw();
+    }
 }
 
 //update velocity function
@@ -278,15 +307,15 @@ function astronaut(width, height, color, x, y) {
     }    
 }
 
-function component(width, height, color, x, y, type, text) {   
+function levelA(width, height, color, x, y, isActive) {  
     this.width = width;  
-    this.height = height;      
+    this.height = height;  
     this.x = x;  
     this.y = y;
-    this.type = type;
-    this.update = function() {
-        ctx = myGameArea.context;    
-        ctx.fillStyle = color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-    }  
-}  
+    this.isActive = isActive;
+    this.draw = function() {
+        ctx = myGameArea.context;  
+        ctx.fillStyle = color;  
+        ctx.fillRect(this.x, this.y, this.width, this.height);  
+    }
+}

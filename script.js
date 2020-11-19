@@ -1,10 +1,11 @@
 var astronaut;
-//var backpack;
+var portal; 
 var startButton;
+var backpack;
 var onBack = true;
 var dropBox = false;
-var canvasHeight = 540;
-var canvasWidth = 1000;
+var canvasHeight = 600;
+var canvasWidth = 900;
 var jumping = false;
 var velX = 0;
 var velY = 0;
@@ -56,23 +57,23 @@ function goToGame() {
 //initializes game
 function initGame() {
     myGameArea.clear();
-//    backpack = new backpack(50, 100, "orange", 0, canvasHeight - 200, false)
-    astronaut = new astronaut(50, 100, "blue", 50, canvasHeight - 150)
+    astronaut = new astronaut(100, 150, "blue", 0, canvasHeight - 200) //50, 100 
+    portal = new component(75, 125, "green", canvasWidth - 75, canvasHeight - 175)
     initLevels();
     astronaut.updateAndDraw();
-//    backpack.updateAndDraw();
+    portal.draw()
 }
 
 function initLevels() {
     var x = 0;
     var i = 0;
     //floor
-    while (x < canvasWidth) {
-        level.push(new levelA(100, 50, "purple", x, canvasHeight - 50, false))
-        x += 100;
-    }
+    //while (x < canvasWidth) {
+        level.push(new component(1000, 50, "purple", 0, canvasHeight - 50, false))
+        //x += 100;
+    //}
     //bump
-    level.push(new levelA(300, 300, "purple", canvasWidth / 2 - 150, canvasHeight - 300, false))
+    level.push(new component(300, 250, "purple", canvasWidth / 2 - 150, canvasHeight - 250, false))
     for(var i = 0; i < level.length; i++) {
         level[i].draw();
     }
@@ -83,23 +84,34 @@ function game() {
     myGameArea.clear();
     document.onkeydown = checkKey.checkKey;
     document.onkeyup = checkKey.checkKey;
-    updateAndDrawLevels();
-    console.log(level)
     if (jumping) {
         jump()
     }
+    updateVelAstronaut()
+    updateAndDrawLevels();
+    if (dropBox) {
+        backpack.draw()
+        if (backpack.x + backpack.width < astronaut.x) {
+            level.push(backpack)
+            dropBox = false;
+        } else if (backpack.x > astronaut.x + astronaut.width) {
+            level.push(backpack)
+            dropBox = false;
+        }
+    }
+    astronaut.updateAndDraw()
     //backpack.updateAndDraw();
-    astronaut.updateAndDraw();
+    //astronaut.updateAndDraw();
+    portal.draw()
 }
 
 function updateAndDrawLevels() {
     for(var i = 0; i < level.length; i++) {
-        if(astronaut.x >= level[i].x && astronaut.x + astronaut.width <= level[i].x + level[i].width) {
-            level[i].isActive = true;
-            activeLevel = level[i]
-        } else {
-            level[i].isActive = false;
-        }
+//        if(astronaut.x >= level[i].x && astronaut.x + astronaut.width <= level[i].x + level[i].width) {
+//            level[i].isActive = true;
+//        } else {
+//            level[i].isActive = false;
+//        }
         level[i].draw();
     }
 }
@@ -111,49 +123,50 @@ function updateVelAstronaut() {
         jumping = true;
     }
     if (checkKey.left) {
-        // if (astronaut.crashLeft(backpack)) {
-        //     astronaut.x = backpack.x + backpack.width;
-        // } else if (backpack.isActive && astronaut.x + astronaut.width < backpack.x) {
-        //     jumping = true;
-        //     backpack.isActive = false;
-        // } else {
-            var collisionLeft = false;
-            for(var i = 0; i < level.length; i++) {
-                if(astronaut.crashLeft(level[i])) {
-                    collisionLeft = true;
-                    astronaut.x = level[i].x + level[i].width
+        var collisionLeft = false;
+        for(var i = 0; i < level.length; i++) {
+            if(genericCollision(astronaut.x + (velX - astronaut.velX), level[i].x, astronaut.width, level[i].width)) {
+                collisionLeft = genericCollision(astronaut.y + velY - 1, level[i].y, astronaut.height, level[i].height);
+                console.log(collisionLeft)
+            }
+        }
+        if (!collisionLeft) {
+            velX -= astronaut.velX
+            astronaut.x += velX;
+             for (var i = 0; i < level.length; i++) {
+                if(level[i].isActive) {
+                    if (astronaut.x + astronaut.width < level[i].x) {
+                        jumping = true;
+                        level[i].isActive = false;
+                    }
                 }
             }
-            if (!collisionLeft) {
-                velX -= astronaut.velX
-                astronaut.x += velX;  
-            }
-        //}
+        }
     }
 
     if (checkKey.right) {
-        // if (astronaut.crashRight(backpack)) {
-        //     astronaut.x = backpack.x - astronaut.width;
-        // } else if (backpack.isActive && astronaut.x > backpack.x + backpack.width) {
-        //         jumping = true;
-        //         backpack.isActive = false;
-        // } else {
             var collisionRight = false;
             for(var i = 0; i < level.length; i++) {
-                if(astronaut.crashRight(level[i])) {
-                    collisionRight = true;
-                    astronaut.x = level[i].x - astronaut.width;
+                if(genericCollision(astronaut.x + velX + astronaut.velX, level[i].x, astronaut.width, level[i].width)) {
+                    collisionRight = genericCollision(astronaut.y + velY - 1, level[i].y, astronaut.height, level[i].height);
+                } 
+            }
+        if (!collisionRight) {
+            velX += astronaut.velX
+            astronaut.x += velX;
+            for (var i = 0; i < level.length; i++) {
+                if(level[i].isActive) {
+                    if (astronaut.x > level[i].x + level[i].width) {
+                        jumping = true;
+                        level[i].isActive = false;
+                    }
                 }
             }
-            if (!collisionRight) {
-                velX += astronaut.velX
-                astronaut.x += velX;  
-            }
-        //}
+        }
     }
-    astronaut.y += velY;
+    //astronaut.y += velY;
     velX *= 0.9;// friction
-    velY *= 0.9;// friction
+    // friction
     if (astronaut.x < 0) {
         velX = 0;
         astronaut.x = 0;
@@ -163,35 +176,6 @@ function updateVelAstronaut() {
         astronaut.x = canvasWidth - astronaut.width
     }
 }
-
-// function updateVelBackPack() {
-//     if (checkKey.left) {
-//         // backpack.x = astronaut.x + astronaut.width + velX - 1;
-//         if (astronaut.x >= canvasWidth - backpack.width * 2) {
-//             backpack.x = canvasWidth - backpack.width
-//             astronaut.x = canvasWidth - (astronaut.width * 2)
-//         }
-//     }
-
-//     if (checkKey.right) {
-//         backpack.x =  astronaut.x - backpack.width + velX + 1;
-//         if (astronaut.x <= backpack.width) {
-//             backpack.x = astronaut.x;
-//             astronaut.x = backpack.width
-//         }
-//     }
-//     backpack.y += velY;
-//     //velX *= 0.9;// friction
-//     //velY *= 0.9;// friction
-//     if (backpack.x < 0) {
-//         velX = 0;
-//         backpack.x = 0;
-//     }
-//     if (backpack.x + backpack.width > canvasWidth) {
-//         velX = 0;
-//         backpack.x = canvasWidth - backpack.width
-//     }
-// }
 
 
 //check key inputs
@@ -218,14 +202,20 @@ var checkKey = {
                 velX = 0;
                 // backpack.y = canvasHeight - backpack.height
                 onBack = false
-                level.push(new levelA(50, 100, "orange", astronaut.x - astronaut.width, canvasHeight - 150, false))
+                backpack = new component(50, 100, "orange", astronaut.x, canvasHeight - 150, false)
+                dropBox = true
+                astronaut.width = 50;
+                astronaut.height = 100;
+                astronaut.y = canvasHeight - 150
+                //change size of astronaut
 //                onBack = false;
 //                dropBox = true;
 //                jumping = true;
             } else {
-                // backpack.x = astronaut.x + astronaut.width 
-                // backpack.y = astronaut.y - 50;
                 onBack = true;
+                astronaut.width = 100;
+                astronaut.height = 150;
+                astronaut.y = canvasHeight - 200
                 level.pop()
                 
                 // backpack.isActive = false;
@@ -234,48 +224,23 @@ var checkKey = {
     }
 }
 
-//check to see if backpack needs to change locations
-function changeDirections(newDirection) {
-    if(newDirection != prevDirection) {
-        if(astronaut.x <= 0) {
-            
-        }
-        //backpack.x = astronaut.x + astronaut.width
-        prevDirection = newDirection
-    }
-}
-
 //jump / gravity function
 function jump() {
-//    if (onBack) {
-//        if ((astronaut.y + astronaut.height + velY) <= canvasHeight) {
-//            astronaut.y = velY + astronaut.y;
-//            //backpack.y = astronaut.y - 50;
-//            velY++;
-//        } else {
-//            jumping = false;
-//            velY = 0;
-//            astronaut.y = canvasHeight - astronaut.height;
-//            //backpack.y = astronaut.y - 50;
-//        }
-//    } else {
-            if (astronaut.crashDown(activeLevel)) {
-                astronaut.y = canvasHeight - activeLevel.height - astronaut.height
-                //backpack.isActive = true;
-                velY = 0;
-                jumping = false;
+    for(var i = 0; i < level.length; i++) {
+        if(genericCollision(astronaut.y + velY + 0.5, level[i].y, astronaut.height, level[i].height) && genericCollision(astronaut.x, level[i].x, astronaut.width, level[i].width)) {
+            jumping = false;
+            velY = 0;
+            level[i].isActive = true;
+            if(!onBack) {
+                astronaut.y = level[i].y - astronaut.height - 0.5;
             } else {
-                if((astronaut.y + astronaut.height + velY <= canvasHeight - activeLevel.height)) {
-                    astronaut.y = velY + astronaut.y;
-                    velY++;
-                } else {
-                    jumping = false;
-                    velY = 0;
-                    astronaut.y = canvasHeight - astronaut.height - activeLevel.height
-                }
-            } 
-    //}
-
+                astronaut.y = level[i].y - astronaut.height;
+            }
+        } else {
+            astronaut.y += velY;
+            velY += 0.5;
+        } 
+    }
 }
   
 var myGameArea = {    
@@ -291,21 +256,40 @@ var myGameArea = {
     }  
 }
 
-//function backpack(width, height, color, x, y, isActive) {  
-//    this.width = width;  
-//    this.height = height;  
-//    this.x = x;  
-//    this.y = y;
-//    this.isActive = isActive;
-//    this.updateAndDraw = function() {
-//        if (onBack) {
-//            updateVelBackPack()
-//        }
-//        ctx = myGameArea.context;  
-//        ctx.fillStyle = color;  
-//        ctx.fillRect(this.x, this.y, this.width, this.height);  
-//    }
-//}
+function collision(objX, objY, objWidth, objHeight, otherObjX, otherObjY, otherObjWidth, otherObjHeight) { 
+        var myleft = objX;  //0
+        var myright = objX + objWidth; // 50
+        console.log(myright)
+        var mytop = objY;  //390
+        var mybottom = objY + objHeight; //490
+        var otherleft = otherObjX;
+        console.log(otherleft)
+        var otherright = otherObjX + otherObjWidth;
+        var othertop = otherObjY;
+        var otherbottom = otherObjY + otherObjHeight;
+        if(myright > otherleft || myleft < otherright || mytop > otherbottom || mybottom < othertop) {
+            return true;
+        } else {
+            return false;
+        }
+}
+
+function genericCollision(posA, posB, lenA, lenB)   {
+    if ((posA + lenA) > posB && posA < (posB + lenB)) {
+        return true
+    } else {
+        return false
+    }
+}
+
+function collisionY(posA, posB, lenA, lenB)   {
+    console.log(posA, posB, lenA, lenB)
+    if ((posA + lenA) > posB && posA < (posB + lenB)) {
+        return true
+    } else {
+        return false
+    }
+}
 
 function astronaut(width, height, color, x, y) {  
     this.width = width;  
@@ -313,25 +297,15 @@ function astronaut(width, height, color, x, y) {
     this.x = x;  
     this.y = y;
     this.velX = 1;
-    this.velY = 15;
+    this.velY = 12;
     this.updateAndDraw = function() {
-        updateVelAstronaut();
         ctx = myGameArea.context;  
         ctx.fillStyle = color;  
         ctx.fillRect(this.x, this.y, this.width, this.height);  
     }
-    this.crashRight = function(otherobj) {
-       return ((this.x + this.width) >= otherobj.x) && (this.x < otherobj.x) && this.y >= otherobj.y
-    }
-     this.crashLeft = function(otherobj) {
-        return (this.x <= (otherobj.x + otherobj.width)) && (this.x > otherobj.x) && this.y >= otherobj.y
-    }
-    this.crashDown = function(otherobj) {
-        return (this.y + this.height >= otherobj.y) && ((this.x + this.width > otherobj.x) && (this.x < otherobj.x + otherobj.width))
-    }    
 }
 
-function levelA(width, height, color, x, y, isActive) {  
+function component(width, height, color, x, y, isActive) {  
     this.width = width;  
     this.height = height;  
     this.x = x;  

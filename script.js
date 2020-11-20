@@ -1,47 +1,61 @@
-// MAIN CODE
-// create html canvas
-let canvas = document.createElement("canvas");
-document.body.insertBefore(canvas, document.body.childNodes[0]);
-
-let controller = new Controller();
+// create main objects to interact
+const controller = new Controller();
 let game = new Game();
-let display = new Display(document.querySelector("canvas"));
+let display = new Display();
+
+// MAIN CODE
+function onLoad() {
+    // run code
+    initialize();
+    setInterval(update, 20); // call update every frame
+}
+
+
+// run code
+initialize();
+setInterval(update, 20); // call update every frame
+
+// DEFINE CODE
+function initialize() {
+    display.initialize();
+}
 
 function update() {
+    console.log("updating");
     // receive input from Controller
     controller.update();
     
     // use input from Controller to update game logic in Game (i.e. mathematically, where is the player?)
-    game.update(Input.upKeyDown, Input.leftKeyDown, Input.rightKeyDown);
+    game.update(controller.input.upKeyDown, controller.input.leftKeyDown, controller.input.rightKeyDown);
 
     // use input from Game to draw the screen with Display
-    display.update(game.Player.xPosition, game.Player.yPosition);
+    display.update(game.player.xPosition, game.player.yPosition);
 }
 
 
 const Controller = function() {
     function update() {
-        Input.upKeyDown = checkUpKeyDown();
-        Input.leftKeyDown = checkLeftKeyDown();
-        Input.rightKeyDown = checkRightKeyDown();
+        document.onkeydown = checkKey;
+        document.onkeyup = checkKey;
     }
 
-    // if pressing upKey, return true
-    function checkUpKeyDown() {
-        return KEYINPUT?? == 38; // how do you get the key input?
+    function checkKey(event) {
+        event = event || window.event;
+        let key_state = (event.type == "keydown") ? true : false;
+        switch(event.keyCode) {
+            case 37:// left key
+                input.leftKeyDown = key_state;
+                break;
+            case 38:// up key
+                input.upKeyDown = key_state;
+                break;
+            case 39:// right key
+                input.rightKeyDown = key_state;
+                break;
+        }
     }
 
-    // if pressing leftKey, return true
-    function checkLeftKeyDown() {
-        return KEYINPUT?? == 37; // how do you get the key input?
-    }
-
-    // if pressing rightKey, tell Game
-    function checkRightKeyDown() {
-        return KEYINPUT?? == 39; // how do you get the key input?
-    }
-
-    let Input = {
+    let input = {
         // key states
         upKeyDown: false,
         leftKeyDown: false,
@@ -49,49 +63,28 @@ const Controller = function() {
     }
 }
 
+
 const Game = function() {
-    let World = {
-        //constant values
-        gravity,
-        floorYPosition,
-    }
-
-    let Player = {
-        // constant values
-        jumpForce,
-
-        // jumping state
-        isJumping,
-
-        // coords (to update and give to Display)
-        xPosition,
-        yPosition,
-        
-        // forces felt by player
-        downForce,
-        upForce
-    }
-
     //update the coordinates of the player (and any other moving objects)
     function update(upKeyDown, leftKeyDown, rightKeyDown) {
-        // UPDATE FORCES ON PLAYER (Player.downForce, upForce, leftForce, and rightForce)
+        // UPDATE FORCES ON PLAYER (player.downForce, upForce, leftForce, and rightForce)
         // if falling
-        if (Player.yPosition < floor) {
-            World.downForce += World.gravity;
+        if (player.yPosition < floor) {
+            player.downForce += world.gravity;
         }
         // if beginning a jump
-        if (upKeyDown && !Player.isJumping) {
-            Player.upForce += jumpForce;
+        if (upKeyDown && !player.isJumping) {
+            player.upForce += jumpForce;
         }
         // if colliding with the ground
-        if (Player.yPosition >= World.floorYPosition) {
-            Player.downForce = 0;
-            Player.upforce = 0;
-            Player.yPosition = World.floorYPosition;
+        if (player.yPosition >= world.floorYPosition) {
+            player.downForce = 0;
+            player.upforce = 0;
+            player.yPosition = world.floorYPosition;
         }
 
-        // apply gravity and jumpforce to Player y-coords
-        Player.yPosition += Player.downForce - Player.upForce;
+        // apply gravity and jumpforce to player y-coords
+        player.yPosition += player.downForce - player.upForce;
 
         // update x coords
 
@@ -99,17 +92,48 @@ const Game = function() {
         // if pressing rightKey and able to move right, update coords to move right
         // if in the air, update coords to apply gravity
     }
+
+    let world = {
+        //constant values
+        gravity: 10,
+        floorYPosition: 540,
+    }
+
+    let player = {
+        // constant values
+        jumpForce: 50,
+
+        // jumping state
+        isJumping: false,
+
+        // coords (to update and give to Display)
+        xPosition: 200,
+        yPosition: 200,
+        
+        // forces felt by player
+        downForce: 0,
+        upForce: 0
+    }
 }
 
-const Display = function(canvas) {
-    // size canvas
-    canvas.width = Canvas.width;  
-    canvas.height = Canvas.height;
-    context = canvas.getContext("2d");
+const Display = function(playerXPosition, playerYPosition) {
+    //variables
+    let canvas = document.createElement("canvas");
+    canvas.width = 600;
+    canvas.height = 900;
+    let context = canvas.getContext("2d");
+
     // create html player context (did I do this right?)
     let playerContext = canvas.getContext("2d");
-    playerContext.fillStyle = Player.color;
+    playerContext.fillStyle = player.color;
     
+    function initialize() {
+        // insert HTML canvas
+        document.body.insertBefore(canvas, document.body.childNodes[0]);
+        // clear screen
+        context.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
     function update() {
         // clear screen
         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -117,62 +141,19 @@ const Display = function(canvas) {
         // draw environment(just canvas right now)
 
         // draw character
-        
+        player
+        context.fillRect(player.xPosition, player.yPosition, player.width, player.height);  
     }
 
     // player information
-    let Player = {
-        height,
-        width,
-        color
-    }
-
-    // canvas information
-    let Canvas = {
-        height,
-        width
+    let player = {
+        xPosition: 200,
+        yPosition: 200,
+        height: 100,
+        width: 100,
+        color: "orange"
     }
 }
-
-
-/* some jumping logic
-let Player = {
-    x = 200,
-    y = 200
-}
-let downForce = 0;
-let upForce = 0;
-let gravity = 1;
-
-let floor = 540;
-let jumpForce = 5;
-let sustainJumpForce = 0;
-
-function gravityUpdate() {
-    //assign gravity
-    if (Player.y < floor) {
-        downforce += gravity;
-    }
-
-    //collide with ground
-    if (player.y >= floor) {
-        downforce = 0;
-        upforce = 0;
-        player.y = floor;
-    }
-
-    //assign jumping force
-	if (btn(2)) and (player.y == floor) {
-	    upforce = upforce + jumpforce;
-	    sfx(3);
-    }
-
-	//apply gravity and jumpforce
-	player.y = player.y + downforce - upforce
-
-}
-
-*/
 
 /*
 Explanation of this code:
@@ -198,7 +179,6 @@ Explanation of this code:
 */
 
 /*
-Explain organization
-Explain jumping logic
-Idea: just one object for player
+Questions:
+How do you get key input?
 */

@@ -1,0 +1,40 @@
+*{
+    padding: 0;
+    margin: 0;
+    overflow-x: hidden;
+}
+.game{
+    width: 1000px;
+    height: 400px;
+    border: 1px solid black;
+    margin: auto;
+}
+#innerbox{
+    width: 20px;
+    height: 20px;
+    background-color: red;
+    position:relative;
+    top: 380px;
+}
+
+.animate-jump{
+    animation: jump 0.3s linear;
+}
+
+@keyframes jump{
+    0%{top: 380px;}
+    30%{top: 330px;}
+    70%{top: 330px;}
+    100%{top: 380px;}
+}
+
+@keyframes move-right {
+    0%{left: 0px}
+    100%{left: 500px}
+}
+
+canvas {
+    border: 1px solid #d3d3d3;  
+    background-color: #f1f1f1;
+    margin: 5px
+}

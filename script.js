@@ -1,5 +1,5 @@
 var astronaut;
-var portal; 
+var portal;  
 var startButton;
 var backpack;
 var onBack = true;
@@ -58,9 +58,11 @@ function goToGame() {
 function initGame() {
     myGameArea.clear();
     astronaut = new astronaut(100, 150, "blue", 0, canvasHeight - 200) //50, 100 
-    portal = new component(75, 125, "green", canvasWidth - 75, canvasHeight - 175)
+    var img = new Image().src( "./portal.png");
+    //img.src = "./portal copy.png"
+    portal = new componentI(75, 125, "green", canvasWidth - 75, canvasHeight - 175, img)
     initLevels();
-    astronaut.updateAndDraw();
+    astronaut.draw();
     portal.draw()
 }
 
@@ -87,8 +89,7 @@ function game() {
     if (jumping) {
         jump()
     }
-    updateVelAstronaut()
-    updateAndDrawLevels();
+    updateVelAstronaut();
     if (dropBox) {
         backpack.draw()
         if (backpack.x + backpack.width < astronaut.x) {
@@ -99,19 +100,13 @@ function game() {
             dropBox = false;
         }
     }
-    astronaut.updateAndDraw()
-    //backpack.updateAndDraw();
-    //astronaut.updateAndDraw();
-    portal.draw()
+    drawLevels();
+    astronaut.draw();
+    portal.draw();
 }
 
-function updateAndDrawLevels() {
+function drawLevels() {
     for(var i = 0; i < level.length; i++) {
-//        if(astronaut.x >= level[i].x && astronaut.x + astronaut.width <= level[i].x + level[i].width) {
-//            level[i].isActive = true;
-//        } else {
-//            level[i].isActive = false;
-//        }
         level[i].draw();
     }
 }
@@ -127,7 +122,6 @@ function updateVelAstronaut() {
         for(var i = 0; i < level.length; i++) {
             if(genericCollision(astronaut.x + (velX - astronaut.velX), level[i].x, astronaut.width, level[i].width)) {
                 collisionLeft = genericCollision(astronaut.y + velY - 1, level[i].y, astronaut.height, level[i].height);
-                console.log(collisionLeft)
             }
         }
         if (!collisionLeft) {
@@ -200,7 +194,7 @@ var checkKey = {
         if (e.keyCode == '88' && e.type == "keydown" && !jumping) {//X 
             if(onBack) {
                 velX = 0;
-                // backpack.y = canvasHeight - backpack.height
+
                 onBack = false
                 backpack = new component(50, 100, "orange", astronaut.x, canvasHeight - 150, false)
                 dropBox = true
@@ -208,17 +202,14 @@ var checkKey = {
                 astronaut.height = 100;
                 astronaut.y = canvasHeight - 150
                 //change size of astronaut
-//                onBack = false;
-//                dropBox = true;
-//                jumping = true;
             } else {
                 onBack = true;
                 astronaut.width = 100;
                 astronaut.height = 150;
                 astronaut.y = canvasHeight - 200
-                level.pop()
-                
-                // backpack.isActive = false;
+                if(!dropBox) {
+                    level.pop()
+                }
             }
         }
     }
@@ -282,15 +273,6 @@ function genericCollision(posA, posB, lenA, lenB)   {
     }
 }
 
-function collisionY(posA, posB, lenA, lenB)   {
-    console.log(posA, posB, lenA, lenB)
-    if ((posA + lenA) > posB && posA < (posB + lenB)) {
-        return true
-    } else {
-        return false
-    }
-}
-
 function astronaut(width, height, color, x, y) {  
     this.width = width;  
     this.height = height;  
@@ -298,7 +280,7 @@ function astronaut(width, height, color, x, y) {
     this.y = y;
     this.velX = 1;
     this.velY = 12;
-    this.updateAndDraw = function() {
+    this.draw = function() {
         ctx = myGameArea.context;  
         ctx.fillStyle = color;  
         ctx.fillRect(this.x, this.y, this.width, this.height);  
@@ -317,3 +299,15 @@ function component(width, height, color, x, y, isActive) {
         ctx.fillRect(this.x, this.y, this.width, this.height);  
     }
 }
+
+function componentI(width, height, color, x, y, img) {  
+    this.width = width;  
+    this.height = height;  
+    this.x = x;  
+    this.y = y;
+    this.draw = function() {
+        ctx = myGameArea.context;   
+        ctx.drawImage(img, this.x, this.y, this.width, this.height);  
+    }
+}
+

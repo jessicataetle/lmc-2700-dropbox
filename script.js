@@ -12,6 +12,7 @@ var velY = 0;
 var level = [];
 var newLevel;
 var activeLevel;
+var img = new Image();
 const state = {
     MENU: 'menu',
     GAME: 'game',
@@ -41,11 +42,12 @@ function onLoad() {
     myGameArea.setup();
     stateMachine.stateMachine(state.MENU, false)
     myGameArea.canvas.addEventListener('click',  goToGame , { once: true })
+    //@matthew start game component should be instantiated here
 }
 
 //start loop
 function start() {
-
+    //@matthew start game animation
 }
 
 //start -> game
@@ -57,10 +59,10 @@ function goToGame() {
 //initializes game
 function initGame() {
     myGameArea.clear();
-    astronaut = new astronaut(100, 150, "blue", 0, canvasHeight - 200) //50, 100 
-    var img = new Image();
-    img.src = "./portal.png"
-    portal = new componentI(75, 125, "green", canvasWidth - 75, canvasHeight - 175, img)
+    //@matthew instantiate astronaut here
+    astronaut = new astronaut(100, 150, "blue", 0, canvasHeight - 200) //50, 100
+    //@matthew example of instantiating here w/ portal 
+    portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, img, "./portal.png")
     initLevels();
     astronaut.draw();
     portal.draw()
@@ -100,6 +102,7 @@ function game() {
             dropBox = false;
         }
     }
+    //@matthew I think the best way to do this is make animation functions that change the source of the image and call them here - also astronaut animation can be based on velocity (ex: negative velX means astronaut is going left). Also you can change the src of an image by doing: {variable name}.src = {new source}
     drawLevels();
     astronaut.draw();
     portal.draw();
@@ -248,11 +251,11 @@ var myGameArea = {
 }
 
 function collision(objX, objY, objWidth, objHeight, otherObjX, otherObjY, otherObjWidth, otherObjHeight) { 
-        var myleft = objX;  //0
-        var myright = objX + objWidth; // 50
+        var myleft = objX;
+        var myright = objX + objWidth;
         console.log(myright)
-        var mytop = objY;  //390
-        var mybottom = objY + objHeight; //490
+        var mytop = objY;
+        var mybottom = objY + objHeight;
         var otherleft = otherObjX;
         console.log(otherleft)
         var otherright = otherObjX + otherObjWidth;
@@ -287,6 +290,24 @@ function astronaut(width, height, color, x, y) {
     }
 }
 
+//@matthew astronaut image function
+function astronautI(width, height, x, y, img, src) {  
+    this.width = width;  
+    this.height = height;  
+    this.x = x;  
+    this.y = y;
+    this.velX = 1;
+    this.velY = 12;
+    this.img = img;
+    this.img.src = src;
+    this.src = src;
+    this.draw = function() {
+        ctx = myGameArea.context;  
+        ctx.fillStyle = color;  
+        ctx.fillRect(this.x, this.y, this.width, this.height);  
+    }
+}
+
 function component(width, height, color, x, y, isActive) {  
     this.width = width;  
     this.height = height;  
@@ -300,11 +321,15 @@ function component(width, height, color, x, y, isActive) {
     }
 }
 
-function componentI(width, height, color, x, y, img) {  
+//@matthew everything else image function
+function componentI(width, height, x, y, img, src) {  
     this.width = width;  
     this.height = height;  
     this.x = x;  
     this.y = y;
+    this.img = img;
+    this.src = src;
+    this.img.src = this.src;
     this.draw = function() {
         ctx = myGameArea.context;   
         ctx.drawImage(img, this.x, this.y, this.width, this.height);  

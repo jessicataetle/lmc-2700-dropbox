@@ -58,8 +58,8 @@ function goToGame() {
 function initGame() {
     myGameArea.clear();
     astronaut = new astronaut(100, 150, "blue", 0, canvasHeight - 200) //50, 100 
-    var img = new Image().src( "./portal.png");
-    //img.src = "./portal copy.png"
+    var img = new Image();
+    img.src = "./portal.png"
     portal = new componentI(75, 125, "green", canvasWidth - 75, canvasHeight - 175, img)
     initLevels();
     astronaut.draw();

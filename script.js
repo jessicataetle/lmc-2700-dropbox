@@ -144,7 +144,7 @@ function updateVelAstronaut() {
     if (checkKey.right) {
             var collisionRight = false;
             for(var i = 0; i < level.length; i++) {
-                if(genericCollision(astronaut.x + velX + astronaut.velX, level[i].x, astronaut.width, level[i].width)) {
+                if(genericCollision(astronaut.x + (velX + astronaut.velX), level[i].x, astronaut.width, level[i].width)) {
                     collisionRight = genericCollision(astronaut.y + velY - 1, level[i].y, astronaut.height, level[i].height);
                 } 
             }
@@ -197,7 +197,6 @@ var checkKey = {
         if (e.keyCode == '88' && e.type == "keydown" && !jumping) {//X 
             if(onBack) {
                 velX = 0;
-
                 onBack = false
                 backpack = new component(50, 100, "orange", astronaut.x, canvasHeight - 150, false)
                 dropBox = true
@@ -206,12 +205,16 @@ var checkKey = {
                 astronaut.y = canvasHeight - 150
                 //change size of astronaut
             } else {
-                onBack = true;
-                astronaut.width = 100;
-                astronaut.height = 150;
-                astronaut.y = canvasHeight - 200
-                if(!dropBox) {
-                    level.pop()
+                if(backpack.y == astronaut.y &&
+                   ((astronaut.x - (backpack.x + backpack.width) < 1 && astronaut.x - (backpack.x + backpack.width) > 0) ||
+                    (backpack.x - (astronaut.x + astronaut.width) < 1 && backpack.x - (astronaut.x + astronaut.width) > 0))) {
+                    onBack = true;
+                    astronaut.width = 100;
+                    astronaut.height = 150;
+                    astronaut.y = canvasHeight - 200
+                    if(!dropBox) {
+                        level.pop()
+                    }
                 }
             }
         }
@@ -221,7 +224,7 @@ var checkKey = {
 //jump / gravity function
 function jump() {
     for(var i = 0; i < level.length; i++) {
-        if(genericCollision(astronaut.y + velY + 0.5, level[i].y, astronaut.height, level[i].height) && genericCollision(astronaut.x, level[i].x, astronaut.width, level[i].width)) {
+        if(genericCollision(astronaut.y + (velY + 0.5), level[i].y, astronaut.height, level[i].height) && genericCollision(astronaut.x, level[i].x, astronaut.width, level[i].width)) {
             jumping = false;
             velY = 0;
             level[i].isActive = true;

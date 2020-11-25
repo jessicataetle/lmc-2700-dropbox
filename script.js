@@ -14,6 +14,9 @@ const state = {
     MENU: 'menu',
     GAME: 'game',
 }
+var level1 = true;
+var level2 = false;
+var level3 = false;
 
 //state machins
 var stateMachine = {
@@ -37,7 +40,7 @@ var stateMachine = {
 function onLoad() {
     myGameArea.setup();
     stateMachine.stateMachine(state.MENU, false)
-    myGameArea.canvas.addEventListener('click',  goToGame , { once: true })
+    myGameArea.canvas.addEventListener('click',  goToLevel1, { once: true })
     //@matthew start game component should be instantiated here
 }
 
@@ -47,7 +50,7 @@ function start() {
 }
 
 //start -> game
-function goToGame() {
+function goToLevel1() {
     stateMachine.stateMachine(state.GAME, true)
     initLevel1();
 }
@@ -61,7 +64,7 @@ function initLevel1() {
     portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, img, "./portal.png")
     initLevel1Levels();
     astronaut.draw();
-    portal.draw()
+    portal.draw();
 }
 
 function initLevel1Levels() {
@@ -75,6 +78,14 @@ function initLevel1Levels() {
 
 //game loop
 function game() {
+    if (level1) {
+        level1Loop();
+    } else if (level2) {
+        level2Loop();
+    }
+}
+
+function level1Loop() {
     myGameArea.clear();
     document.onkeydown = checkKey.checkKey;
     document.onkeyup = checkKey.checkKey;
@@ -83,19 +94,36 @@ function game() {
     }
     updateVelAstronaut();
     if (dropBox) {
-        backpack.draw()
-        if (backpack.x + backpack.width < astronaut.x) {
-            level.push(backpack)
-            dropBox = false;
-        } else if (backpack.x > astronaut.x + astronaut.width) {
-            level.push(backpack)
-            dropBox = false;
-        }
+        inBackpackBounds();
+        backpack.draw();
     }
     //@matthew I think the best way to do this is make animation functions that change the source of the image and call them here - also astronaut animation can be based on velocity (ex: negative velX means astronaut is going left). Also you can change the src of an image by doing: {variable name}.src = {new source}
     drawLevels();
     astronaut.draw();
     portal.draw();
+    if(collision(astronaut.x, astronaut.y, astronaut.width, astronaut.height, portal.x, portal.y, portal.width, portal.height)) {
+        initLevel2();
+    }
+}
+
+function initLevel2() {
+    level1 = false;
+    level2 = true;
+    myGameArea.clear();
+}
+
+function level2Loop() {
+    
+}
+
+function inBackpackBounds() {
+    if (backpack.x + backpack.width < astronaut.x) {
+        level.push(backpack)
+        dropBox = false;
+    } else if (backpack.x > astronaut.x + astronaut.width) {
+        level.push(backpack)
+        dropBox = false;
+    }
 }
 
 //check key inputs
@@ -122,7 +150,6 @@ var checkKey = {
                 dropBackpack();
             } else {
                 pickUpBackpack();
-                console.log(level);
             }
         }
     }
@@ -154,9 +181,6 @@ function pickUpBackpack() {
 }
 
 function findSpot() {
-    console.log(astronaut.x)
-    console.log("collistionLeft: " + checkCollisionLeft())
-    console.log("collisionRight: " + checkCollisionRight())
     if(!checkCollisionLeft() && !checkCollisionRight()) {
         return;
     } else {
@@ -272,19 +296,16 @@ function checkCollisionRight() {
 }
 
 function collision(objX, objY, objWidth, objHeight, otherObjX, otherObjY, otherObjWidth, otherObjHeight) { 
-        var myleft = objX;
-        var myright = objX + objWidth;
-        var mytop = objY;
-        var mybottom = objY + objHeight;
-        var otherleft = otherObjX;
-        var otherright = otherObjX + otherObjWidth;
-        var othertop = otherObjY;
-        var otherbottom = otherObjY + otherObjHeight;
-        if(myright > otherleft || myleft < otherright || mytop > otherbottom || mybottom < othertop) {
-            return true;
-        } else {
-            return false;
-        }
+    var myleft = objX;
+    var myright = objX + objWidth;
+    var mytop = objY;
+    var mybottom = objY + objHeight;
+    var otherleft = otherObjX;
+    var otherright = otherObjX + otherObjWidth;
+    var othertop = otherObjY;
+    var otherbottom = otherObjY + otherObjHeight;
+    return mytop < otherbottom - 1 && mybottom - 1 > othertop
+    && myleft < otherright - 1 && myright - 1 > otherleft;
 }
 
 function genericCollision(posA, posB, lenA, lenB)   {
@@ -367,4 +388,3 @@ function componentI(width, height, x, y, img, src) {
         ctx.drawImage(img, this.x, this.y, this.width, this.height);  
     }
 }
-

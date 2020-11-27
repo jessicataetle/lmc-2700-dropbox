@@ -53,9 +53,41 @@ function collision(objX, objY, objWidth, objHeight, otherObjX, otherObjY, otherO
 }
 
 function genericCollision(posA, posB, lenA, lenB)   {
-    if ((posA + lenA) > posB && posA < (posB + lenB)) {
+    if ((posA + lenA) - 1 > posB && posA < (posB + lenB) - 1) {
         return true
     } else {
         return false
+    }
+}
+
+//jump / gravity function
+function jump() {
+    var stop = false;
+    for(var i = 0; i < level.length; i++) {
+        if(genericCollision(astronaut.y + (velY + 1), level[i].y, astronaut.height, level[i].height) && genericCollision(astronaut.x, level[i].x, astronaut.width, level[i].width)) {
+            level[i].isActive = true;
+            if (astronaut.y < level[i].y) {
+                stop = true;
+                if(!onBack) {
+                    astronaut.y = level[i].y - astronaut.height;
+                } else {
+                    astronaut.y = level[i].y - astronaut.height;
+                }   
+            } else {
+                if (!collision(astronaut.x, astronaut.y - 1, astronaut.width, astronaut.height, level[i].x, level[i].y, level[i].width, level[i].height)) {
+                    velY = -1;
+                } else {
+                    stop = true;
+                }
+            }
+        }
+    }
+    
+    if (stop) {
+        jumping = false;
+        velY = 0;
+    } else {
+        astronaut.y += velY;
+        velY += 1;
     }
 }

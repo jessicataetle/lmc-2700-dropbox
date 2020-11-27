@@ -1,6 +1,8 @@
 var astronaut;
 var portal;  
 var backpack;
+var collisionRight;
+var collisionLeft;
 var onBack = true;
 var dropBox = false;
 var canvasHeight = 600;
@@ -27,14 +29,14 @@ let level2Plan =
 ".................." +
 ".................." +
 ".................." +
-".................." +
-".................." +
-".................." +
-"########.........." +
-"...............###" +
-"@..............###" +
-"...............###" +
-"...............###" +
+"###..............." +
+"###..............." +
+"###..............." +
+"###..............." +
+"#######..........." +
+"@.............####" +
+"..............####" +
+"..............####" +
 "##################"
 var myGameArea = {    
    canvas : document.createElement("canvas"),  
@@ -61,14 +63,6 @@ function initLevel1() {
     portal.draw();
 }
 
-//function initLevel1Levels() {
-//    level.push(new component(1000, 50, "purple", 0, canvasHeight - 50, false))
-//    //bump
-//    level.push(new component(300, 250, "purple", canvasWidth / 2 - 150, canvasHeight - 250, false))
-//    for(var i = 0; i < level.length; i++) {
-//        level[i].draw();
-//    }
-//}
 function initNewLevel(levelPlan) {
     level = []
     var col = 0;
@@ -142,8 +136,8 @@ function dropBackpack() {
 
 function pickUpBackpack() {
     if(backpack.y == astronaut.y &&
-        ((astronaut.x - (backpack.x + backpack.width) < 5 && astronaut.x - (backpack.x + backpack.width) > 0) ||
-        (backpack.x - (astronaut.x + astronaut.width) < 5 && backpack.x - (astronaut.x + astronaut.width) > 0))) {
+        ((astronaut.x - (backpack.x + backpack.width) < 5 && astronaut.x - (backpack.x + backpack.width) > -1) ||
+        (backpack.x - (astronaut.x + astronaut.width) < 5 && backpack.x - (astronaut.x + astronaut.width) > -1))) {
             onBack = true;
             astronaut.width = 100;
             astronaut.height = 150;
@@ -168,31 +162,6 @@ function findSpot() {
     }
 }
 
-//jump / gravity function
-function jump() {
-    var stop = false;
-    for(var i = 0; i < level.length; i++) {
-        //console.log(genericCollision(astronaut.y + (velY + 0.5), level[i].y, astronaut.height, level[i].height) && genericCollision(astronaut.x, level[i].x, astronaut.width, level[i].width))
-        if(genericCollision(astronaut.y + (velY + 1), level[i].y, astronaut.height, level[i].height) && genericCollision(astronaut.x, level[i].x, astronaut.width, level[i].width)) {
-            stop = true;
-            velY = 0;
-            level[i].isActive = true;
-            if(!onBack) {
-                astronaut.y = level[i].y - astronaut.height;
-                //jumping = false;
-            } else {
-                astronaut.y = level[i].y - astronaut.height;
-            }
-            //break;
-        } else {
-            //console.log(astronaut.y)
-        }
-    }
-    if (stop) {
-        jumping = false;
-    }
-}
-
 //update velocity function
 function updateVelAstronaut() {
     if (checkKey.up && !jumping) {
@@ -201,21 +170,21 @@ function updateVelAstronaut() {
     }
     
     if (checkKey.left) {
-        var collisionLeft = checkCollisionLeft();
         if (!collisionLeft) {
             velX -= astronaut.velX
             astronaut.x += velX;
             checkFallLeft();
         }
+        collisionLeft = checkCollisionLeft();
     }
 
     if (checkKey.right) {
-        var collisionRight = checkCollisionRight();
         if (!collisionRight) {
             velX += astronaut.velX
             astronaut.x += velX;
             checkFallRight();
         }
+        collisionRight = checkCollisionRight();
     }
     //astronaut.y += velY;
     velX *= 0.9;// friction
@@ -232,7 +201,8 @@ function updateVelAstronaut() {
 
 function checkCollisionLeft() {
      for(var i = 0; i < level.length; i++) {
-        if(genericCollision(astronaut.x + (velX - astronaut.velX), level[i].x, astronaut.width, level[i].width) && genericCollision(astronaut.y + velY - 1, level[i].y, astronaut.height, level[i].height)) {
+//        if(genericCollision(astronaut.x + (velX - astronaut.velX), level[i].x, astronaut.width, level[i].width) && genericCollision(astronaut.y, level[i].y, astronaut.height, level[i].height)) {
+         if (collision(astronaut.x + (velX - astronaut.velX), astronaut.y, astronaut.width, astronaut.height, level[i].x, level[i].y, level[i].width, level[i].height)) {
             return true;
         }
     }
@@ -241,7 +211,8 @@ function checkCollisionLeft() {
 
 function checkCollisionRight() {
     for(var i = 0; i < level.length; i++) {
-        if(genericCollision((velX + astronaut.velX) + astronaut.x, level[i].x, astronaut.width, level[i].width) && genericCollision(astronaut.y + velY - 1, level[i].y, astronaut.height, level[i].height)) {
+//        if(genericCollision((velX + astronaut.velX) + astronaut.x, level[i].x, astronaut.width, level[i].width) && genericCollision(astronaut.y, level[i].y, astronaut.height, level[i].height)) {
+        if(collision(astronaut.x + (velX + astronaut.velX), astronaut.y, astronaut.width, astronaut.height, level[i].x, level[i].y, level[i].width, level[i].height)) {
             return true;
         } 
     }

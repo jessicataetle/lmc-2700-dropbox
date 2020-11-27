@@ -51,8 +51,6 @@ function game() {
     document.onkeyup = checkKey.checkKey;
     if (jumping) {
         jump()
-        astronaut.y += velY;
-        velY += 1;
     }
     updateVelAstronaut();
     if (dropBox) {

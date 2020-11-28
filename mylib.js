@@ -74,7 +74,7 @@ function jump() {
                     astronaut.y = level[i].y - astronaut.height;
                 }   
             } else {
-                if (!collision(astronaut.x, astronaut.y - 1, astronaut.width, astronaut.height, level[i].x, level[i].y, level[i].width, level[i].height)) {
+                if (!collision(astronaut.x, astronaut.y, astronaut.width, astronaut.height, level[i].x, level[i].y, level[i].width, level[i].height)) {
                     velY = -1;
                 } else {
                     stop = true;

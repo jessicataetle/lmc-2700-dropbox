@@ -11,6 +11,9 @@ var jumping = false;
 var velX = 0;
 var velY = 0;
 var level = [];
+var powerups = [];
+var activePowerup = false;
+var activePowerupBlock;
 var img = new Image();
 let level1Plan =
 ".................." +
@@ -29,14 +32,14 @@ let level2Plan =
 ".................." +
 ".................." +
 ".................." +
-"###..............." +
-"###..............." +
-"###..............." +
-"###..............." +
+"####.............." +
+"####.............." +
+"####............*." +
+"####.............." +
 "#######..........." +
-"@.............####" +
-"..............####" +
-"..............####" +
+"@..............###" +
+"...............###" +
+"...............###" +
 "##################"
 var myGameArea = {    
    canvas : document.createElement("canvas"),  
@@ -51,18 +54,6 @@ var myGameArea = {
     }  
 }
 
-//initializes game
-function initLevel1() {
-    myGameArea.clear();
-    //@matthew instantiate astronaut here
-    //@matthew example of instantiating here w/ portal 
-    portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, img, "./portal.png")
-    //initLevel1Levels();
-    initNewLevel(level1Plan)
-    astronaut.draw();
-    portal.draw();
-}
-
 function initNewLevel(levelPlan) {
     level = []
     var col = 0;
@@ -70,10 +61,11 @@ function initNewLevel(levelPlan) {
     for(var i = 0; i < levelPlan.length; i++) {
         if(levelPlan.charAt(i) == '#') {
             level.push(new component(50, 50, "purple", col, row, false))
-            //i = j;
         } else if (levelPlan.charAt(i) == '@') {
             astronaut = null;
             astronaut = new Astronaut(100, 150, "blue", col, row)
+        } else if (levelPlan.charAt(i) == '*') {
+            powerups.push(new component(100, 100, "green", col, row))
         }
         
         if(col == canvasWidth - 50) {
@@ -121,17 +113,23 @@ var checkKey = {
                 pickUpBackpack();
             }
         }
+        if (e.keyCode == '90' && e.type == "keydown" && !jumping) {
+            if (activePowerup) {
+                moveBackpackToAstronaut();
+                activePowerup = false;
+            }
+        }
     }
 }
 
 function dropBackpack() {
     velX = 0;
     onBack = false
-    backpack = new component(50, 100, "orange", astronaut.x, canvasHeight - 150, false)
-    dropBox = true
     astronaut.width = 50;
     astronaut.height = 100;
-    astronaut.y = canvasHeight - 150
+    astronaut.y = astronaut.y + 50
+    backpack = new component(50, 100, "orange", astronaut.x, astronaut.y, false)
+    dropBox = true
 }
 
 function pickUpBackpack() {
@@ -160,6 +158,12 @@ function findSpot() {
             astronaut.x = astronaut.x + 1;
         }
     }
+}
+
+function moveBackpackToAstronaut() {
+    level.pop()
+    backpack = new component(50, 100, "orange", astronaut.x, astronaut.y, false)
+    dropBox = true
 }
 
 //update velocity function
@@ -241,8 +245,24 @@ function checkFallLeft() {
     }
 }
 
+function powerUpCollision() {
+    for (var i = 0; i < powerups.length; i++) {
+         if (collision(astronaut.x, astronaut.y, astronaut.width, astronaut.height, powerups[i].x, powerups[i].y, powerups[i].width, powerups[i].height)) {
+             powerups.splice(i,1)
+             activePowerup = true;
+             activePowerupBlock = new component(50, 50, "green", canvasWidth - 50, 0)
+         }
+    }
+}
+
 function drawLevels() {
     for(var i = 0; i < level.length; i++) {
         level[i].draw();
+    }
+}
+
+function drawPowerUps() {
+    for(var i = 0; i < powerups.length; i++) {
+        powerups[i].draw()
     }
 }

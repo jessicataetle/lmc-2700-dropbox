@@ -53,22 +53,39 @@ function game() {
         jump()
     }
     updateVelAstronaut();
+    powerUpCollision();
     if (dropBox) {
         inBackpackBounds();
         backpack.draw();
     }
     //@matthew I think the best way to do this is make animation functions that change the source of the image and call them here - also astronaut animation can be based on velocity (ex: negative velX means astronaut is going left). Also you can change the src of an image by doing: {variable name}.src = {new source}
     drawLevels();
+    drawPowerUps();
     astronaut.draw();
     portal.draw();
+    if (activePowerup) {
+        activePowerupBlock.draw()
+    }
     if(collision(astronaut.x, astronaut.y, astronaut.width, astronaut.height, portal.x, portal.y, portal.width, portal.height)) {
         if(level1) {
-            goToLevel2();
+            initLevel2();
         }
     }
 }
 
-function goToLevel2() {
+//initializes game
+function initLevel1() {
+    myGameArea.clear();
+    //@matthew instantiate astronaut here
+    //@matthew example of instantiating here w/ portal 
+    portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, img, "./portal.png")
+    initNewLevel(level1Plan)
+    astronaut.draw();
+    portal.draw();
+}
+
+
+function initLevel2() {
     onBack = true;
     dropBox = false;
     jumping = false;
@@ -77,7 +94,7 @@ function goToLevel2() {
     myGameArea.clear();
     initNewLevel(level2Plan);
     drawLevels();
-    portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, img, "./portal.png")
+    portal = new componentI(75, 125, 0, 25, img, "./portal.png")
     portal.draw();
     astronaut.draw();
 }

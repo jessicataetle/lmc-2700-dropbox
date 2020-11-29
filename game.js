@@ -165,6 +165,15 @@ var checkKey = {
                 activePowerup = false;
             }
         }
+        if (e.keyCode == '82' && e.type == "keydown") {
+            if (level1) {
+               initLevel1();
+            } else if (level2) {
+                initLevel2();
+            } else if (level3) {
+                initLevel3();
+            }
+        }
     }
 }
 

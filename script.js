@@ -80,6 +80,9 @@ function game() {
 
 //initializes game
 function initLevel1() {
+    onBack = true;
+    dropBox = false;
+    jumping = false;
     myGameArea.clear();
     //@matthew instantiate astronaut here
     //@matthew example of instantiating here w/ portal 
@@ -95,6 +98,7 @@ function initLevel2() {
     jumping = false;
     level1 = false;
     level2 = true;
+    activePowerup = false;
     myGameArea.clear();
     initNewLevel(level2Plan);
     drawLevels();
@@ -109,6 +113,7 @@ function initLevel3() {
     jumping = false;
     level2 = false;
     level3 = true;
+    activePowerup = false;
     myGameArea.clear();
     initNewLevel3(level3Plan);
     drawLevels();

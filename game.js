@@ -12,9 +12,11 @@ var velX = 0;
 var velY = 0;
 var level = [];
 var powerups = [];
+var bushes = [];
 var activePowerup = false;
 var activePowerupBlock;
 var img = new Image();
+var imgB = new Image();
 let level1Plan =
 ".................." +
 ".................." +
@@ -41,6 +43,27 @@ let level2Plan =
 "...............###" +
 "...............###" +
 "##################"
+let level3Plan =
+".......................*......" +
+".............................." +
+".............................." +
+"...............###########...." +
+"...........###############...." +
+"...........###############...." +
+"...........###############...." +
+"...........###############...." +
+"...........###############...." +
+".......###################...." +
+".......###################...." +
+"....*..###################...." +
+".......###################...." +
+".......###################...." +
+"...#######################...." +
+"...#######################...." +
+"@..#######################...." +
+"...~~~~~~~~~~~~~~~~~~~~~~~...." +
+"...~~~~~~~~~~~~~~~~~~~~~~~...." +
+"##############################"
 var myGameArea = {    
    canvas : document.createElement("canvas"),  
     setup : function() {  
@@ -73,6 +96,29 @@ function initNewLevel(levelPlan) {
             row += 50;
         } else {
             col += 50;
+        }
+    }
+}
+function initNewLevel3(levelPlan) {
+    level = []
+    var col = 0;
+    var row = 0;
+    for(var i = 0; i < levelPlan.length; i++) {
+        if(levelPlan.charAt(i) == '#') {
+            level.push(new component(30, 30, "purple", col, row, false))
+        } else if (levelPlan.charAt(i) == '@') {
+            astronaut = null;
+            astronaut = new Astronaut(60, 90, "blue", col, row)
+        } else if (levelPlan.charAt(i) == '*') {
+            powerups.push(new component(60, 60, "green", col, row))
+        } else if (levelPlan.charAt(i) == '~') {
+            bushes.push(new componentI(30, 30, col, row, imgB, "./tall_grass1.png"))
+        }
+        if(col == canvasWidth - 30) {
+            col = 0;
+            row += 30;
+        } else {
+            col += 30;
         }
     }
 }
@@ -113,7 +159,7 @@ var checkKey = {
                 pickUpBackpack();
             }
         }
-        if (e.keyCode == '90' && e.type == "keydown" && !jumping) {
+        if (e.keyCode == '90' && e.type == "keydown" && !jumping && !onBack) {
             if (activePowerup) {
                 moveBackpackToAstronaut();
                 activePowerup = false;
@@ -125,10 +171,16 @@ var checkKey = {
 function dropBackpack() {
     velX = 0;
     onBack = false
-    astronaut.width = 50;
-    astronaut.height = 100;
-    astronaut.y = astronaut.y + 50
-    backpack = new component(50, 100, "orange", astronaut.x, astronaut.y, false)
+    if (!level3) {
+        astronaut.width = 50;
+        astronaut.height = 100;
+        astronaut.y = astronaut.y + 50
+    } else {
+        astronaut.width = 30
+        astronaut.height = 60
+        astronaut.y = astronaut.y + 30
+    }
+    backpack = new component(astronaut.width, astronaut.height, "orange", astronaut.x, astronaut.y, false)
     dropBox = true
 }
 
@@ -137,9 +189,15 @@ function pickUpBackpack() {
         ((astronaut.x - (backpack.x + backpack.width) < 5 && astronaut.x - (backpack.x + backpack.width) > -1) ||
         (backpack.x - (astronaut.x + astronaut.width) < 5 && backpack.x - (astronaut.x + astronaut.width) > -1))) {
             onBack = true;
-            astronaut.width = 100;
-            astronaut.height = 150;
-            astronaut.y = canvasHeight - 200;
+            if (!level3) {
+                astronaut.width = 100;
+                astronaut.height = 150;
+                astronaut.y = astronaut.y - 50; 
+            } else {
+                astronaut.width = 60;
+                astronaut.height = 90;
+                astronaut.y = astronaut.y - 30; 
+            }
             if(!dropBox) {
                 level.pop();
                 findSpot();
@@ -162,7 +220,7 @@ function findSpot() {
 
 function moveBackpackToAstronaut() {
     level.pop()
-    backpack = new component(50, 100, "orange", astronaut.x, astronaut.y, false)
+    backpack = new component(astronaut.width, astronaut.height, "orange", astronaut.x, astronaut.y, false)
     dropBox = true
 }
 
@@ -264,5 +322,11 @@ function drawLevels() {
 function drawPowerUps() {
     for(var i = 0; i < powerups.length; i++) {
         powerups[i].draw()
+    }
+}
+
+function drawBushes() {
+    for(var i = 0; i < bushes.length; i++) {
+        bushes[i].draw()
     }
 }

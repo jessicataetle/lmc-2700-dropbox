@@ -66,9 +66,14 @@ function game() {
     if (activePowerup) {
         activePowerupBlock.draw()
     }
+    if (level3) {
+        drawBushes();
+    }
     if(collision(astronaut.x, astronaut.y, astronaut.width, astronaut.height, portal.x, portal.y, portal.width, portal.height)) {
         if(level1) {
             initLevel2();
+        }else if (level2) {
+            initLevel3();
         }
     }
 }
@@ -84,7 +89,6 @@ function initLevel1() {
     portal.draw();
 }
 
-
 function initLevel2() {
     onBack = true;
     dropBox = false;
@@ -95,6 +99,20 @@ function initLevel2() {
     initNewLevel(level2Plan);
     drawLevels();
     portal = new componentI(75, 125, 0, 25, img, "./portal.png")
+    portal.draw();
+    astronaut.draw();
+}
+
+function initLevel3() {
+    onBack = true;
+    dropBox = false;
+    jumping = false;
+    level2 = false;
+    level3 = true;
+    myGameArea.clear();
+    initNewLevel3(level3Plan);
+    drawLevels();
+    portal = new componentI(45, 75, canvasWidth - 45, canvasHeight - 105, img, "./portal.png")
     portal.draw();
     astronaut.draw();
 }

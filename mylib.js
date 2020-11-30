@@ -26,17 +26,19 @@ function componentI(width, height, x, y, img, src) {
     }
 }
 
-function Astronaut(width, height, color, x, y) {  
+function Astronaut(width, height, x, y, img, src) {  
     this.width = width;  
     this.height = height;  
     this.x = x;  
     this.y = y;
     this.velX = 1;
     this.velY = 15;
+    this.img = img;
+    this.src = src;
+    this.img.src = this.src;
     this.draw = function() {
-        ctx = myGameArea.context;  
-        ctx.fillStyle = color;  
-        ctx.fillRect(this.x, this.y, this.width, this.height);  
+        ctx = myGameArea.context;
+        ctx.drawImage(img, this.x, this.y, this.width, this.height);
     }
 }
 

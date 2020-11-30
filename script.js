@@ -1,3 +1,8 @@
+var spriteTime = 3;
+var spriteNum = 1;
+var spriteDirection = "right";
+var packText = "-pack";
+
 //import initLevel1 from './game.js'
 const state = {
     MENU: 'menu',
@@ -7,7 +12,7 @@ var level1 = true;
 var level2 = false;
 var level3 = false;
 
-//state machins
+//state machine
 var stateMachine = {
     interval: '',
     stateMachine: function(state, change) {
@@ -59,6 +64,7 @@ function game() {
         backpack.draw();
     }
     //@matthew I think the best way to do this is make animation functions that change the source of the image and call them here - also astronaut animation can be based on velocity (ex: negative velX means astronaut is going left). Also you can change the src of an image by doing: {variable name}.src = {new source}
+    updateAstronautImage();
     drawLevels();
     drawPowerUps();
     astronaut.draw();
@@ -88,6 +94,7 @@ function initLevel1() {
     //@matthew example of instantiating here w/ portal 
     portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, img, "./portal.png")
     initNewLevel(level1Plan)
+    updateAstronautImage();
     astronaut.draw();
     portal.draw();
 }
@@ -120,4 +127,31 @@ function initLevel3() {
     portal = new componentI(45, 75, canvasWidth - 45, canvasHeight - 105, img, "./portal.png")
     portal.draw();
     astronaut.draw();
+}
+
+function updateAstronautImage() {    
+    if (onBack) {
+        packText = "-pack";
+    } else {
+        packText = "";
+    }
+    if (!checkKey.left && !checkKey.right && ! checkKey.up) {
+        spriteNum = 1;
+    } else if (checkKey.left || checkKey.right) {// execute walking left thing
+        if (checkKey.left) {
+            spriteDirection = "left";
+        } else {
+            spriteDirection = "right";
+        }
+        if (spriteTime >= 0) {
+            spriteTime--;
+        } else {
+            spriteNum++;
+            spriteTime = 3;
+            if (spriteNum > 7) {
+                spriteNum = 1;
+            }
+        }
+    }
+    astronaut.img.src = "images/astronaut/walk-" + spriteDirection + packText + "/" + spriteNum + ".png";
 }

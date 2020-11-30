@@ -1,7 +1,28 @@
 var spriteTime = 3;
-var spriteNum = 1;
+var spriteNum = 0;
 var spriteDirection = "right";
 var packText = "-pack";
+var leftWalkSprites = [];
+var rightWalkSprites = [];
+var leftWalkPackSprites = [];
+var rightWalkPackSprites = [];
+for (var i = 0; i < 7; i++) {
+    leftWalkSprites[i] = new Image();
+    leftWalkSprites[i].src = "images/astronaut/walk-left/" + (i + 1) + ".png";
+}
+for (var i = 0; i < 7; i++) {
+    rightWalkSprites[i] = new Image();
+    rightWalkSprites[i].src = "images/astronaut/walk-right/" + (i + 1) + ".png";
+}
+for (var i = 0; i < 7; i++) {
+    leftWalkPackSprites[i] = new Image();
+    leftWalkPackSprites[i].src = "images/astronaut/walk-left-pack/" + (i + 1) + ".png";
+}
+for (var i = 0; i < 7; i++) {
+    rightWalkPackSprites[i] = new Image();
+    rightWalkPackSprites[i].src = "images/astronaut/walk-right-pack/" + (i + 1) + ".png";
+}
+loopingSpriteArray = rightWalkPackSprites;
 
 //import initLevel1 from './game.js'
 const state = {
@@ -155,3 +176,37 @@ function updateAstronautImage() {
     }
     astronaut.img.src = "images/astronaut/walk-" + spriteDirection + packText + "/" + spriteNum + ".png";
 }
+
+/*
+function updateAstronautImage() {    
+    if (!checkKey.left && !checkKey.right && ! checkKey.up) {
+        spriteNum = 0;
+    } else {
+        if (checkKey.left) {
+            if (onBack) {
+                loopingSpriteArray = leftWalkPackSprites;
+            } else {
+                loopingSpriteArray = leftWalkSprites;
+            }
+        } else if (checkKey.right) {
+            if (onBack) {
+                loopingSpriteArray = rightWalkPackSprites;
+            } else {
+                loopingSpriteArray = rightWalkSprites;
+            }
+        }
+        if (spriteTime >= 0) {
+            spriteTime--;
+
+        } else {
+            spriteNum++;
+            spriteTime = 3;
+            if (spriteNum > 6) {
+                spriteNum = 0;
+            }
+        }
+    }
+    astronaut.img = loopingSpriteArray[spriteNum];
+    astronaut.src = loopingSpriteArray[spriteNum];
+    astronaut.img.src = loopingSpriteArray[spriteNum].src;
+}*/

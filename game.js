@@ -108,7 +108,7 @@ function initNewLevel3(levelPlan) {
             level.push(new component(30, 30, "purple", col, row, false))
         } else if (levelPlan.charAt(i) == '@') {
             astronaut = null;
-            astronaut = new Astronaut(100, 150, col, row, new Image(), "images/astronaut/idle-pack.png")
+            astronaut = new Astronaut(60, 90, col, row, new Image(), "images/astronaut/idle-pack.png")
         } else if (levelPlan.charAt(i) == '*') {
             powerups.push(new component(60, 60, "green", col, row))
         } else if (levelPlan.charAt(i) == '~') {

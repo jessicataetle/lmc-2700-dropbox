@@ -156,12 +156,16 @@ var checkKey = {
             if(onBack) {
                 dropBackpack();
             } else {
-                pickUpBackpack();
+                if(backpack.y == astronaut.y &&
+                    ((astronaut.x - (backpack.x + backpack.width) < 5 && astronaut.x - (backpack.x + backpack.width) > -1) ||
+                    (backpack.x - (astronaut.x + astronaut.width) < 5 && backpack.x - (astronaut.x + astronaut.width) > -1))) {
+                    pickUpBackpack();
+                }
             }
         }
         if (e.keyCode == '90' && e.type == "keydown" && !jumping && !onBack) {
             if (activePowerup) {
-                moveBackpackToAstronaut();
+                pickUpBackpack();
                 activePowerup = false;
             }
         }
@@ -194,24 +198,20 @@ function dropBackpack() {
 }
 
 function pickUpBackpack() {
-    if(backpack.y == astronaut.y &&
-        ((astronaut.x - (backpack.x + backpack.width) < 5 && astronaut.x - (backpack.x + backpack.width) > -1) ||
-        (backpack.x - (astronaut.x + astronaut.width) < 5 && backpack.x - (astronaut.x + astronaut.width) > -1))) {
-            onBack = true;
-            if (!level3) {
-                astronaut.width = 100;
-                astronaut.height = 150;
-                astronaut.y = astronaut.y - 50; 
-            } else {
-                astronaut.width = 60;
-                astronaut.height = 90;
-                astronaut.y = astronaut.y - 30; 
-            }
-            if(!dropBox) {
-                level.pop();
-                findSpot();
-            }
-    } 
+    onBack = true;
+    if (!level3) {
+        astronaut.width = 100;
+        astronaut.height = 150;
+        astronaut.y = astronaut.y - 50; 
+    } else {
+        astronaut.width = 60;
+        astronaut.height = 90;
+        astronaut.y = astronaut.y - 30; 
+    }
+    if(!dropBox) {
+        level.pop();
+        findSpot();
+    }
 }
 
 function findSpot() {
@@ -272,7 +272,6 @@ function updateVelAstronaut() {
 
 function checkCollisionLeft() {
      for(var i = 0; i < level.length; i++) {
-//        if(genericCollision(astronaut.x + (velX - astronaut.velX), level[i].x, astronaut.width, level[i].width) && genericCollision(astronaut.y, level[i].y, astronaut.height, level[i].height)) {
          if (collision(astronaut.x + (velX - astronaut.velX), astronaut.y, astronaut.width, astronaut.height, level[i].x, level[i].y, level[i].width, level[i].height)) {
             return true;
         }
@@ -282,7 +281,6 @@ function checkCollisionLeft() {
 
 function checkCollisionRight() {
     for(var i = 0; i < level.length; i++) {
-//        if(genericCollision((velX + astronaut.velX) + astronaut.x, level[i].x, astronaut.width, level[i].width) && genericCollision(astronaut.y, level[i].y, astronaut.height, level[i].height)) {
         if(collision(astronaut.x + (velX + astronaut.velX), astronaut.y, astronaut.width, astronaut.height, level[i].x, level[i].y, level[i].width, level[i].height)) {
             return true;
         } 

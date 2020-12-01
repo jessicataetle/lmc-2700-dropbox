@@ -72,7 +72,6 @@ function goToLevel1() {
 
 //game loop
 function game() {
-    myGameArea.clear();
     document.onkeydown = checkKey.checkKey;
     document.onkeyup = checkKey.checkKey;
     if (jumping) {
@@ -86,6 +85,7 @@ function game() {
     }
     //@matthew I think the best way to do this is make animation functions that change the source of the image and call them here - also astronaut animation can be based on velocity (ex: negative velX means astronaut is going left). Also you can change the src of an image by doing: {variable name}.src = {new source}
     updateAstronautImage();
+    myGameArea.clear();
     drawLevels();
     drawPowerUps();
     astronaut.draw();

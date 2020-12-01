@@ -83,10 +83,11 @@ function initLevel1() {
     onBack = true;
     dropBox = false;
     jumping = false;
+    levelGroundImage = createImage("./ground-tiles/texture-moon01.png");
+    portalImage = createImage("./portal.png");
     myGameArea.clear();
     //@matthew instantiate astronaut here
-    //@matthew example of instantiating here w/ portal 
-    portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, img, "./portal.png")
+    portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, portalImage)
     initNewLevel(level1Plan)
     astronaut.draw();
     portal.draw();
@@ -100,9 +101,10 @@ function initLevel2() {
     level2 = true;
     activePowerup = false;
     myGameArea.clear();
+    levelGroundImage = createImage("./ground-tiles/texture-moon02.png");
     initNewLevel(level2Plan);
     drawLevels();
-    portal = new componentI(75, 125, 0, 25, img, "./portal.png")
+    portal = new componentI(75, 125, 0, 25, portalImage)
     portal.draw();
     astronaut.draw();
 }
@@ -117,7 +119,7 @@ function initLevel3() {
     myGameArea.clear();
     initNewLevel3(level3Plan);
     drawLevels();
-    portal = new componentI(45, 75, canvasWidth - 45, canvasHeight - 105, img, "./portal.png")
+    portal = new componentI(45, 75, canvasWidth - 45, canvasHeight - 105, portalImage)
     portal.draw();
     astronaut.draw();
 }

@@ -16,6 +16,8 @@ var bushes = [];
 var activePowerup = false;
 var activePowerupBlock;
 var levelGroundImage;
+var level2GroundImage;
+var level2GroundImage1;
 let level1Plan =
 ".................." +
 ".................." +
@@ -34,14 +36,14 @@ let level2Plan =
 ".................." +
 ".................." +
 "####.............." +
-"####.............." +
-"####............*." +
-"####.............." +
-"#######..........." +
+"&&&&.............." +
+"&&&&............*." +
+"&&&&.............." +
+"&&&&###..........." +
 "@..............###" +
-"...............###" +
-"...............###" +
-"##################"
+"...............&&&" +
+"...............&&&" +
+"###############&&&"
 let level3Plan =
 ".......................*......" +
 ".............................." +
@@ -88,6 +90,8 @@ function initNewLevel(levelPlan) {
             astronaut = new Astronaut(100, 150, "blue", col, row)
         } else if (levelPlan.charAt(i) == '*') {
             powerups.push(new component(100, 100, "green", col, row))
+        } else if (levelPlan.charAt(i) === '&') {
+            level.push(new componentI(50, 50, col, row, level2GroundImage))
         }
         
         if(col == canvasWidth - 50) {

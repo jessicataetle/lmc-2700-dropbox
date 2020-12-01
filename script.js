@@ -5,6 +5,7 @@ const state = {
 var level1 = true;
 var level2 = false;
 var level3 = false;
+var level2Background = "url(Lvl-02-background.png)"
 
 //state machins
 var stateMachine = {
@@ -56,6 +57,7 @@ function game() {
     }
     if(collision(astronaut.x, astronaut.y, astronaut.width, astronaut.height, portal.x, portal.y, portal.width, portal.height)) {
         if(level1) {
+            document.body.style.backgroundImage = level2Background
             initLevel2();
         }else if (level2) {
             initLevel3();
@@ -100,7 +102,9 @@ function initLevel2() {
     level1 = false;
     level2 = true;
     activePowerup = false;
-    levelGroundImage = createImage("./ground-tiles/texture-moon02.png");
+    levelGroundImage = createImage("./ground-tiles/2.png");
+    level2GroundImage = createImage("./ground-tiles/Lvl-02-tile.png")
+    level2GroundImage1 = createImage("./ground-tiles/7.png")
     initNewLevel(level2Plan);
     portal = new componentI(75, 125, 0, 25, portalImage)
     myGameArea.clear();

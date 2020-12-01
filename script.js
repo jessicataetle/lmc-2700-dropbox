@@ -1,4 +1,3 @@
-//import initLevel1 from './game.js'
 const state = {
     MENU: 'menu',
     GAME: 'game',
@@ -30,7 +29,6 @@ function onLoad() {
     myGameArea.setup();
     stateMachine.stateMachine(state.MENU, false)
     myGameArea.canvas.addEventListener('click',  goToLevel1, { once: true })
-    //@matthew start game component should be instantiated here
 }
 
 //start loop
@@ -46,7 +44,6 @@ function goToLevel1() {
 
 //game loop
 function game() {
-    myGameArea.clear();
     document.onkeydown = checkKey.checkKey;
     document.onkeyup = checkKey.checkKey;
     if (jumping) {
@@ -56,18 +53,6 @@ function game() {
     powerUpCollision();
     if (dropBox) {
         inBackpackBounds();
-        backpack.draw();
-    }
-    //@matthew I think the best way to do this is make animation functions that change the source of the image and call them here - also astronaut animation can be based on velocity (ex: negative velX means astronaut is going left). Also you can change the src of an image by doing: {variable name}.src = {new source}
-    drawLevels();
-    drawPowerUps();
-    astronaut.draw();
-    portal.draw();
-    if (activePowerup) {
-        activePowerupBlock.draw()
-    }
-    if (level3) {
-        drawBushes();
     }
     if(collision(astronaut.x, astronaut.y, astronaut.width, astronaut.height, portal.x, portal.y, portal.width, portal.height)) {
         if(level1) {
@@ -75,6 +60,21 @@ function game() {
         }else if (level2) {
             initLevel3();
         }
+    }
+    //@matthew I think the best way to do this is make animation functions that change the source of the image and call them here - also astronaut animation can be based on velocity (ex: negative velX means astronaut is going left). Also you can change the src of an image by doing: {variable name}.src = {new source}
+    myGameArea.clear();
+    drawLevels();
+    drawPowerUps();
+    if (dropBox) {
+        backpack.draw();
+    }
+    astronaut.draw();
+    portal.draw();
+    if (activePowerup) {
+        activePowerupBlock.draw()
+    }
+    if (level3) {
+        drawBushes();
     }
 }
 
@@ -85,10 +85,10 @@ function initLevel1() {
     jumping = false;
     levelGroundImage = createImage("./ground-tiles/texture-moon01.png");
     portalImage = createImage("./portal.png");
-    myGameArea.clear();
-    //@matthew instantiate astronaut here
-    portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, portalImage)
     initNewLevel(level1Plan)
+    portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, portalImage)
+    myGameArea.clear();
+    drawLevels();
     astronaut.draw();
     portal.draw();
 }
@@ -100,11 +100,11 @@ function initLevel2() {
     level1 = false;
     level2 = true;
     activePowerup = false;
-    myGameArea.clear();
     levelGroundImage = createImage("./ground-tiles/texture-moon02.png");
     initNewLevel(level2Plan);
-    drawLevels();
     portal = new componentI(75, 125, 0, 25, portalImage)
+    myGameArea.clear();
+    drawLevels();
     portal.draw();
     astronaut.draw();
 }
@@ -116,10 +116,10 @@ function initLevel3() {
     level2 = false;
     level3 = true;
     activePowerup = false;
-    myGameArea.clear();
     initNewLevel3(level3Plan);
-    drawLevels();
     portal = new componentI(45, 75, canvasWidth - 45, canvasHeight - 105, portalImage)
+    myGameArea.clear();
+    drawLevels();
     portal.draw();
     astronaut.draw();
 }

@@ -14,6 +14,7 @@ var level = [];
 var powerups = [];
 var bushes = [];
 var activePowerup = false;
+var powerUpImage;
 var activePowerupBlock;
 var levelGroundImage;
 var level2GroundImage;
@@ -35,15 +36,15 @@ let level2Plan =
 ".................." +
 ".................." +
 ".................." +
-"####.............." +
-"&&&&.............." +
-"&&&&............*." +
-"&&&&.............." +
-"&&&&###..........." +
-"@..............###" +
-"...............&&&" +
-"...............&&&" +
-"###############&&&"
+"###..............." +
+"&&&..............." +
+"&&&............*.." +
+"&&&..............." +
+"&&&###............" +
+"@.............####" +
+"..............&&&&" +
+"..............&&&&" +
+"##############&&&&"
 let level3Plan =
 ".......................*......" +
 ".............................." +
@@ -89,7 +90,7 @@ function initNewLevel(levelPlan) {
             astronaut = null;
             astronaut = new Astronaut(100, 150, "blue", col, row)
         } else if (levelPlan.charAt(i) == '*') {
-            powerups.push(new component(100, 100, "green", col, row))
+            powerups.push(new componentFromImage(100, 100, col, row, powerUpImage))
         } else if (levelPlan.charAt(i) === '&') {
             level.push(new componentFromImage(50, 50, col, row, level2GroundImage))
         }
@@ -114,7 +115,7 @@ function initNewLevel3(levelPlan) {
             astronaut = null;
             astronaut = new Astronaut(60, 90, "blue", col, row)
         } else if (levelPlan.charAt(i) == '*') {
-            powerups.push(new component(60, 60, "green", col, row))
+            powerups.push(new componentFromImage(60, 60, col, row, powerUpImage))
         } else if (levelPlan.charAt(i) == '~') {
             bushes.push(new componentFromImage(30, 30, col, row, tallGrassImage))
         }
@@ -319,7 +320,7 @@ function powerUpCollision() {
          if (collision(astronaut.x, astronaut.y, astronaut.width, astronaut.height, powerups[i].x, powerups[i].y, powerups[i].width, powerups[i].height)) {
              powerups.splice(i,1)
              activePowerup = true;
-             activePowerupBlock = new component(50, 50, "green", canvasWidth - 50, 0)
+             activePowerupBlock = new componentFromImage(50, 50, canvasWidth - 50, 0, powerUpImage)
          }
     }
 }

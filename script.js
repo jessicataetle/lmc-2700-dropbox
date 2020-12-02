@@ -106,6 +106,7 @@ function initLevel2() {
     level1 = false;
     level2 = true;
     activePowerup = false;
+    powerUpImage = createImage("powerup.png")
     levelGroundImage = createImage("./ground-tiles/2.png");
     level2GroundImage = createImage("./ground-tiles/Lvl-02-tile.png")
     initNewLevel(level2Plan);

@@ -109,7 +109,7 @@ function initNewLevel3(levelPlan) {
     var tallGrassImage = createImage("./tall_grass1.png")
     for(var i = 0; i < levelPlan.length; i++) {
         if(levelPlan.charAt(i) == '#') {
-            level.push(new component(30, 30, "purple", col, row, false))
+            level.push(new componentI(30, 30, col, row, levelGroundImage))
         } else if (levelPlan.charAt(i) == '@') {
             astronaut = null;
             astronaut = new Astronaut(60, 90, "blue", col, row)

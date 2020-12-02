@@ -123,6 +123,7 @@ function initLevel3() {
     level2 = false;
     level3 = true;
     activePowerup = false;
+    levelGroundImage = createImage("./ground-tiles/texture-moon02.png")
     initNewLevel3(level3Plan);
     portal = new componentI(45, 75, canvasWidth - 45, canvasHeight - 105, portalImage)
     myGameArea.clear();

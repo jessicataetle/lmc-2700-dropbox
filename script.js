@@ -5,7 +5,8 @@ const state = {
 var level1 = true;
 var level2 = false;
 var level3 = false;
-var level2Background = "url(Lvl-02-background.png)"
+var level2Background;
+var level3Background;
 
 //state machins
 var stateMachine = {
@@ -30,6 +31,8 @@ function onLoad() {
     myGameArea.setup();
     stateMachine.stateMachine(state.MENU, false)
     myGameArea.canvas.addEventListener('click',  goToLevel1, { once: true })
+    level2Background = createImage("Lvl-02-background.png")
+    level3Background = createImage("Lvl-03-background.png")
 }
 
 //start loop
@@ -57,9 +60,10 @@ function game() {
     }
     if(collision(astronaut.x, astronaut.y, astronaut.width, astronaut.height, portal.x, portal.y, portal.width, portal.height)) {
         if(level1) {
-            document.body.style.backgroundImage = level2Background
+            document.body.style.backgroundImage = "url(" + level2Background.src + ")"
             initLevel2();
         }else if (level2) {
+            document.body.style.backgroundImage = "url(" + level3Background.src + ")"
             initLevel3();
         }
     }
@@ -104,7 +108,6 @@ function initLevel2() {
     activePowerup = false;
     levelGroundImage = createImage("./ground-tiles/2.png");
     level2GroundImage = createImage("./ground-tiles/Lvl-02-tile.png")
-    level2GroundImage1 = createImage("./ground-tiles/7.png")
     initNewLevel(level2Plan);
     portal = new componentI(75, 125, 0, 25, portalImage)
     myGameArea.clear();

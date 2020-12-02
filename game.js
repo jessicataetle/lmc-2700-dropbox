@@ -84,14 +84,14 @@ function initNewLevel(levelPlan) {
     var row = 0;
     for(var i = 0; i < levelPlan.length; i++) {
         if(levelPlan.charAt(i) == '#') {
-            level.push(new componentI(50, 50, col, row, levelGroundImage))
+            level.push(new componentFromImage(50, 50, col, row, levelGroundImage))
         } else if (levelPlan.charAt(i) == '@') {
             astronaut = null;
             astronaut = new Astronaut(100, 150, "blue", col, row)
         } else if (levelPlan.charAt(i) == '*') {
             powerups.push(new component(100, 100, "green", col, row))
         } else if (levelPlan.charAt(i) === '&') {
-            level.push(new componentI(50, 50, col, row, level2GroundImage))
+            level.push(new componentFromImage(50, 50, col, row, level2GroundImage))
         }
         
         if(col == canvasWidth - 50) {
@@ -109,14 +109,14 @@ function initNewLevel3(levelPlan) {
     var tallGrassImage = createImage("./tall_grass1.png")
     for(var i = 0; i < levelPlan.length; i++) {
         if(levelPlan.charAt(i) == '#') {
-            level.push(new componentI(30, 30, col, row, levelGroundImage))
+            level.push(new componentFromImage(30, 30, col, row, levelGroundImage))
         } else if (levelPlan.charAt(i) == '@') {
             astronaut = null;
             astronaut = new Astronaut(60, 90, "blue", col, row)
         } else if (levelPlan.charAt(i) == '*') {
             powerups.push(new component(60, 60, "green", col, row))
         } else if (levelPlan.charAt(i) == '~') {
-            bushes.push(new componentI(30, 30, col, row, tallGrassImage))
+            bushes.push(new componentFromImage(30, 30, col, row, tallGrassImage))
         }
         if(col == canvasWidth - 30) {
             col = 0;

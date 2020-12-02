@@ -92,7 +92,7 @@ function initLevel1() {
     levelGroundImage = createImage("./ground-tiles/texture-moon01.png");
     portalImage = createImage("./portal.png");
     initNewLevel(level1Plan)
-    portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, portalImage)
+    portal = new componentFromImage(75, 125, canvasWidth - 75, canvasHeight - 175, portalImage)
     myGameArea.clear();
     drawLevels();
     astronaut.draw();
@@ -109,7 +109,7 @@ function initLevel2() {
     levelGroundImage = createImage("./ground-tiles/2.png");
     level2GroundImage = createImage("./ground-tiles/Lvl-02-tile.png")
     initNewLevel(level2Plan);
-    portal = new componentI(75, 125, 0, 25, portalImage)
+    portal = new componentFromImage(75, 125, 0, 25, portalImage)
     myGameArea.clear();
     drawLevels();
     portal.draw();
@@ -125,7 +125,7 @@ function initLevel3() {
     activePowerup = false;
     levelGroundImage = createImage("./ground-tiles/texture-moon02.png")
     initNewLevel3(level3Plan);
-    portal = new componentI(45, 75, canvasWidth - 45, canvasHeight - 105, portalImage)
+    portal = new componentFromImage(45, 75, canvasWidth - 45, canvasHeight - 105, portalImage)
     myGameArea.clear();
     drawLevels();
     portal.draw();

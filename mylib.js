@@ -17,12 +17,26 @@ function component(width, height, color, x, y, isActive) {
     }
 }
 
-function componentI(width, height, x, y, img) {  
+function componentFromImage(width, height, x, y, img) {  
     this.width = width;  
     this.height = height;  
     this.x = x;  
     this.y = y;
     this.img = img;
+    this.draw = function() {
+        ctx = myGameArea.context;   
+        ctx.drawImage(img, this.x, this.y, this.width, this.height);  
+    }
+}
+
+function componentI(width, height, x, y, img, src) {  
+    this.width = width;  
+    this.height = height;  
+    this.x = x;  
+    this.y = y;
+    this.img = img;
+    this.src = src;
+    this.img.src = this.src;
     this.draw = function() {
         ctx = myGameArea.context;   
         ctx.drawImage(img, this.x, this.y, this.width, this.height);  

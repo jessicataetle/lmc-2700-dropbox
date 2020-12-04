@@ -1,6 +1,6 @@
 var portalSpriteNum = 1;
-var portalSpriteTime = 3;
-var astroSpriteTime = 3;
+var portalSpriteTime = 5;
+var astroSpriteTime = 15;
 var astroSpriteNum = 0;
 var astroSpriteDirection = "right";
 var packText = "-pack";
@@ -67,6 +67,7 @@ function game() {
         inBackpackBounds();
     }
     //@matthew I think the best way to do this is make animation functions that change the source of the image and call them here - also astronaut animation can be based on velocity (ex: negative velX means astronaut is going left). Also you can change the src of an image by doing: {variable name}.src = {new source}
+    updatePortalImageLoop();
     updateAstronautImage();
     myGameArea.clear();
     drawLevels();
@@ -101,7 +102,6 @@ function initLevel1() {
     //@matthew example of instantiating here w/ portal 
     portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, img, "./images/portal/1.png")
     initNewLevel(level1Plan)
-    updatePortalImageLoop();
     updateAstronautImage();
     astronaut.draw();
     portal.draw();
@@ -173,20 +173,19 @@ function updateAstronautImage() {
     }
 
     astronaut.img.src = "images/astronaut/" + stateText + astroSpriteDirection + packText + "/" + astroSpriteNum + ".png";
-    console.log(astroSpriteNum);
-    // astronaut.img.src = "images/astronaut/walk-right-pack/smaller-01.png";
 }
 
 function updatePortalImageLoop() {
+    console.log(portalSpriteNum);
+    portalSpriteTime--;
     if (portalSpriteTime < 0) {
         portalSpriteNum++;
-        if (portalSpriteNum > 1) {
+        if (portalSpriteNum > 4) {
             portalSpriteNum = 1;
         }
-        portalSpriteTime = 3;
-    } else {
-        portalSpriteTime--;
+        portalSpriteTime = 15;
     }
+    portal.img.src = "images/portal/" + portalSpriteNum + ".png";
 }
 
 function primeImages() {
@@ -206,6 +205,10 @@ function primeImages() {
     for (var i = 0; i < 9; i++) {
         image = new Image();
         image.src = "images/astronaut/walk-right-pack/" + (i + 1) + ".png";
+    }
+    for (var i = 0; i < 4; i++) {
+        image = new Image();
+        image.src = "images/portal/" + (i + 1) + ".png";
     }
     image = new Image();
     image.src = "images/astronaut/jump-left/1.png";

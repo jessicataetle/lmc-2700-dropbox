@@ -5,8 +5,12 @@ const state = {
 var level1 = true;
 var level2 = false;
 var level3 = false;
+var level1Background;
 var level2Background;
 var level3Background;
+var startScreenImages = [];
+var startscreen;
+var startscreenCount = 0;
 
 //state machins
 var stateMachine = {
@@ -20,7 +24,7 @@ var stateMachine = {
                 this.interval = setInterval(game, 20)
                 break;
             case 'menu':
-                this.interval = setInterval(start, 20)
+                this.interval = setInterval(start, 40)
                 break;
         }
     }
@@ -30,18 +34,37 @@ var stateMachine = {
 function onLoad() {
     myGameArea.setup();
     stateMachine.stateMachine(state.MENU, false)
-    myGameArea.canvas.addEventListener('click',  goToLevel1, { once: true })
+    document.addEventListener('click',  goToLevel1, { once: true })
+    level1Background = createImage("GameDesign_LVL01_4k.png")
     level2Background = createImage("Lvl-02-background.png")
     level3Background = createImage("Lvl-03-background.png")
+    for(var i = 1; i < 66; i++) {
+        if (i < 10) {
+            startScreenImages.push(createImage("./startscreen/StartScreen_adjusted200" + i + ".png"))
+        } else {
+            startScreenImages.push(createImage("./startscreen/StartScreen_adjusted20" + i + ".png"))
+        }
+    }
+    //startscreen = new componentFromImage(canvasWidth, canvasHeight, 0, 0, startScreenImages[0]);
+    startscreenCount++;
 }
 
 //start loop
 function start() {
-    //@matthew start game animation
+    if(startscreenCount < startScreenImages.length - 1) {
+        document.body.style.backgroundImage = "url(" + startScreenImages[startscreenCount].src + ")"
+        //startscreen = new componentFromImage(canvasWidth, canvasHeight, 0, 0, startScreenImages[startscreenCount])
+        startscreenCount++;
+    } else {
+        startscreenCount = 0;
+    }
+    //myGameArea.clear()
+    //startscreen.draw()
 }
 
 //start -> game
 function goToLevel1() {
+    document.body.style.backgroundImage = "url(" + level1Background.src + ")"
     stateMachine.stateMachine(state.GAME, true)
     initLevel1();
 }
@@ -65,6 +88,8 @@ function game() {
         }else if (level2) {
             document.body.style.backgroundImage = "url(" + level3Background.src + ")"
             initLevel3();
+        } else if (level3) {
+            
         }
     }
     //@matthew I think the best way to do this is make animation functions that change the source of the image and call them here - also astronaut animation can be based on velocity (ex: negative velX means astronaut is going left). Also you can change the src of an image by doing: {variable name}.src = {new source}

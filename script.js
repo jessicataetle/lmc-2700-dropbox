@@ -1,6 +1,7 @@
 const state = {
     MENU: 'menu',
     GAME: 'game',
+    END: 'end',
 }
 var level1 = true;
 var level2 = false;
@@ -9,7 +10,10 @@ var level1Background;
 var level2Background;
 var level3Background;
 var startScreenImages = [];
+var endScreenImages = [];
+var endscreen;
 var startscreen;
+var endScreenCount = 0
 var startscreenCount = 0;
 
 //state machins
@@ -25,6 +29,9 @@ var stateMachine = {
                 break;
             case 'menu':
                 this.interval = setInterval(start, 40)
+                break;
+            case 'end':
+                this.interval = setInterval(end, 40)
                 break;
         }
     }
@@ -45,21 +52,17 @@ function onLoad() {
             startScreenImages.push(createImage("./startscreen/StartScreen_adjusted20" + i + ".png"))
         }
     }
-    //startscreen = new componentFromImage(canvasWidth, canvasHeight, 0, 0, startScreenImages[0]);
-    startscreenCount++;
+    createEndScreenImages()
 }
 
 //start loop
 function start() {
     if(startscreenCount < startScreenImages.length - 1) {
         document.body.style.backgroundImage = "url(" + startScreenImages[startscreenCount].src + ")"
-        //startscreen = new componentFromImage(canvasWidth, canvasHeight, 0, 0, startScreenImages[startscreenCount])
         startscreenCount++;
     } else {
         startscreenCount = 0;
     }
-    //myGameArea.clear()
-    //startscreen.draw()
 }
 
 //start -> game
@@ -89,7 +92,7 @@ function game() {
             document.body.style.backgroundImage = "url(" + level3Background.src + ")"
             initLevel3();
         } else if (level3) {
-            
+            stateMachine.stateMachine(state.END, true)
         }
     }
     //@matthew I think the best way to do this is make animation functions that change the source of the image and call them here - also astronaut animation can be based on velocity (ex: negative velX means astronaut is going left). Also you can change the src of an image by doing: {variable name}.src = {new source}
@@ -109,6 +112,16 @@ function game() {
     }
 }
 
+function end() {
+    myGameArea.clear();
+    if(endScreenCount < endScreenImages.length - 1) {
+        document.body.style.backgroundImage = "url(" + endScreenImages[endScreenCount].src + ")"
+        endScreenCount++;
+    } else {
+        endScreenCount = 0;
+    }
+}
+ 
 //initializes game
 function initLevel1() {
     onBack = true;
@@ -156,4 +169,16 @@ function initLevel3() {
     drawLevels();
     portal.draw();
     astronaut.draw();
+}
+
+function createEndScreenImages() {
+    for(var i = 0; i < 518; i++) {
+        if (i < 10) {
+            endScreenImages.push(createImage("./endscreen/EndScreen00" + i + ".png"))
+        } else if ( i < 100) {
+            endScreenImages.push(createImage("./endscreen/EndScreen0" + i + ".png"))
+        } else {
+            endScreenImages.push(createImage("./endscreen/EndScreen" + i + ".png"))
+        }
+    }
 }

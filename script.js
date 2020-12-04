@@ -1,6 +1,7 @@
 var portalSpriteNum = 1;
 var portalSpriteTime = 5;
-var astroSpriteTime = 15;
+var portalColor = "red";
+var astroSpriteTime = 10;
 var astroSpriteNum = 0;
 var astroSpriteDirection = "right";
 var packText = "-pack";
@@ -94,13 +95,14 @@ function game() {
 
 //initializes game
 function initLevel1() {
+    primeImages();
     onBack = true;
     dropBox = false;
     jumping = false;
     myGameArea.clear();
     //@matthew instantiate astronaut here
     //@matthew example of instantiating here w/ portal 
-    portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, img, "./images/portal/1.png")
+    portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, img, "./images/portal/red/001.png")
     initNewLevel(level1Plan)
     updateAstronautImage();
     astronaut.draw();
@@ -108,6 +110,7 @@ function initLevel1() {
 }
 
 function initLevel2() {
+    primeImages();
     onBack = true;
     dropBox = false;
     jumping = false;
@@ -117,12 +120,14 @@ function initLevel2() {
     myGameArea.clear();
     initNewLevel(level2Plan);
     drawLevels();
-    portal = new componentI(75, 125, 0, 25, img, "./portal.png")
+    portalColor = "green";
+    portal = new componentI(75, 125, 0, 25, img, "./images/portal/green/001.png")
     portal.draw();
     astronaut.draw();
 }
 
 function initLevel3() {
+    primeImages();
     onBack = true;
     dropBox = false;
     jumping = false;
@@ -132,7 +137,8 @@ function initLevel3() {
     myGameArea.clear();
     initNewLevel3(level3Plan);
     drawLevels();
-    portal = new componentI(45, 75, canvasWidth - 45, canvasHeight - 105, img, "./portal.png")
+    portalColor = "blue";
+    portal = new componentI(45, 75, canvasWidth - 45, canvasHeight - 105, img, "./images/portal/blue/001.png")
     portal.draw();
     astronaut.draw();
 }
@@ -176,16 +182,15 @@ function updateAstronautImage() {
 }
 
 function updatePortalImageLoop() {
-    console.log(portalSpriteNum);
     portalSpriteTime--;
     if (portalSpriteTime < 0) {
         portalSpriteNum++;
         if (portalSpriteNum > 4) {
             portalSpriteNum = 1;
         }
-        portalSpriteTime = 15;
+        portalSpriteTime = 10;
     }
-    portal.img.src = "images/portal/" + portalSpriteNum + ".png";
+    portal.img.src = "images/portal/" + portalColor + "/00" + portalSpriteNum + ".png";
 }
 
 function primeImages() {
@@ -208,7 +213,7 @@ function primeImages() {
     }
     for (var i = 0; i < 4; i++) {
         image = new Image();
-        image.src = "images/portal/" + (i + 1) + ".png";
+        image.src = "images/portal/" + portalColor + "/00" + (i + 1) + ".png";
     }
     image = new Image();
     image.src = "images/astronaut/jump-left/1.png";

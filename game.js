@@ -193,7 +193,6 @@ function dropBackpack() {
     }
     backpack = new componentI(astronaut.width, astronaut.height, astronaut.x, astronaut.y, new Image(), "images/astronaut/pack.png");
     dropBox = true
-    primeImages();
 }
 
 function pickUpBackpack() {

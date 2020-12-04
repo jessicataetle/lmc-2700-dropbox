@@ -41,6 +41,9 @@ function start() {
 //start -> game
 function goToLevel1() {
     stateMachine.stateMachine(state.GAME, true)
+    var audio = new Audio("./audio/DropBox\ Rough.mp3")
+    audio.loop = true;
+    audio.play();
     initLevel1();
 }
 

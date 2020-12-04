@@ -1,3 +1,5 @@
+var jumping = false;
+
 function component(width, height, color, x, y, isActive) {  
     this.width = width;  
     this.height = height;  
@@ -70,6 +72,7 @@ function jump() {
             level[i].isActive = true;
             if (astronaut.y < level[i].y) {
                 stop = true;
+                jumping = true;
                 if(!onBack) {
                     astronaut.y = level[i].y - astronaut.height;
                 } else {

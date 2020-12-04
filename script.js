@@ -1,28 +1,12 @@
-var spriteTime = 3;
-var spriteNum = 0;
-var spriteDirection = "right";
+var portalSpriteNum = 1;
+var portalSpriteTime = 3;
+var astroSpriteTime = 3;
+var astroSpriteNum = 0;
+var astroSpriteDirection = "right";
 var packText = "-pack";
-var leftWalkSprites = [];
-var rightWalkSprites = [];
-var leftWalkPackSprites = [];
-var rightWalkPackSprites = [];
-for (var i = 0; i < 7; i++) {
-    leftWalkSprites[i] = new Image();
-    leftWalkSprites[i].src = "images/astronaut/walk-left/" + (i + 1) + ".png";
-}
-for (var i = 0; i < 7; i++) {
-    rightWalkSprites[i] = new Image();
-    rightWalkSprites[i].src = "images/astronaut/walk-right/" + (i + 1) + ".png";
-}
-for (var i = 0; i < 7; i++) {
-    leftWalkPackSprites[i] = new Image();
-    leftWalkPackSprites[i].src = "images/astronaut/walk-left-pack/" + (i + 1) + ".png";
-}
-for (var i = 0; i < 7; i++) {
-    rightWalkPackSprites[i] = new Image();
-    rightWalkPackSprites[i].src = "images/astronaut/walk-right-pack/" + (i + 1) + ".png";
-}
-loopingSpriteArray = rightWalkPackSprites;
+var stateText = "walk-";
+var jumpFrameStack = 0;
+primeImages();
 
 //import initLevel1 from './game.js'
 const state = {
@@ -115,8 +99,9 @@ function initLevel1() {
     myGameArea.clear();
     //@matthew instantiate astronaut here
     //@matthew example of instantiating here w/ portal 
-    portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, img, "./portal.png")
+    portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, img, "./images/portal/1.png")
     initNewLevel(level1Plan)
+    updatePortalImageLoop();
     updateAstronautImage();
     astronaut.draw();
     portal.draw();
@@ -153,62 +138,81 @@ function initLevel3() {
 }
 
 function updateAstronautImage() {    
+    stateText = "walk-";
     if (onBack) {
         packText = "-pack";
     } else {
         packText = "";
     }
     if (!checkKey.left && !checkKey.right && ! checkKey.up) {
-        spriteNum = 1;
+        astroSpriteNum = 1;
     } else if (checkKey.left || checkKey.right) {// execute walking left thing
         if (checkKey.left) {
-            spriteDirection = "left";
+            astroSpriteDirection = "left";
         } else {
-            spriteDirection = "right";
+            astroSpriteDirection = "right";
         }
-        if (spriteTime >= 0) {
-            spriteTime--;
+        if (astroSpriteTime >= 0) {
+            astroSpriteTime--;
         } else {
-            spriteNum++;
-            spriteTime = 3;
-            if (spriteNum > 7) {
-                spriteNum = 1;
+            astroSpriteNum++;
+            astroSpriteTime = 3;
+            if (astroSpriteNum > 9) {
+                astroSpriteNum = 1;
             }
         }
     }
-    astronaut.img.src = "images/astronaut/walk-" + spriteDirection + packText + "/" + spriteNum + ".png";
+    if (jumping) {
+        jumpFrameStack++;
+        if (jumpFrameStack > 2) {
+            stateText = "jump-"
+            astroSpriteNum = 1;
+        }
+    } else {
+        jumpFrameStack = 0;
+    }
+
+    astronaut.img.src = "images/astronaut/" + stateText + astroSpriteDirection + packText + "/" + astroSpriteNum + ".png";
+    console.log(astroSpriteNum);
+    // astronaut.img.src = "images/astronaut/walk-right-pack/smaller-01.png";
 }
 
-/*
-function updateAstronautImage() {    
-    if (!checkKey.left && !checkKey.right && ! checkKey.up) {
-        spriteNum = 0;
+function updatePortalImageLoop() {
+    if (portalSpriteTime < 0) {
+        portalSpriteNum++;
+        if (portalSpriteNum > 1) {
+            portalSpriteNum = 1;
+        }
+        portalSpriteTime = 3;
     } else {
-        if (checkKey.left) {
-            if (onBack) {
-                loopingSpriteArray = leftWalkPackSprites;
-            } else {
-                loopingSpriteArray = leftWalkSprites;
-            }
-        } else if (checkKey.right) {
-            if (onBack) {
-                loopingSpriteArray = rightWalkPackSprites;
-            } else {
-                loopingSpriteArray = rightWalkSprites;
-            }
-        }
-        if (spriteTime >= 0) {
-            spriteTime--;
-
-        } else {
-            spriteNum++;
-            spriteTime = 3;
-            if (spriteNum > 6) {
-                spriteNum = 0;
-            }
-        }
+        portalSpriteTime--;
     }
-    astronaut.img = loopingSpriteArray[spriteNum];
-    astronaut.src = loopingSpriteArray[spriteNum];
-    astronaut.img.src = loopingSpriteArray[spriteNum].src;
-}*/
+}
+
+function primeImages() {
+    var image;
+    for (var i = 0; i < 9; i++) {
+        image = new Image();
+        image.src = "images/astronaut/walk-left/" + (i + 1) + ".png";
+    }
+    for (var i = 0; i < 9; i++) {
+        image = new Image();
+        image.src = "images/astronaut/walk-right/" + (i + 1) + ".png";
+    }
+    for (var i = 0; i < 9; i++) {
+        image = new Image();
+        image.src = "images/astronaut/walk-left-pack/" + (i + 1) + ".png";
+    }
+    for (var i = 0; i < 9; i++) {
+        image = new Image();
+        image.src = "images/astronaut/walk-right-pack/" + (i + 1) + ".png";
+    }
+    image = new Image();
+    image.src = "images/astronaut/jump-left/1.png";
+    image = new Image();
+    image.src = "images/astronaut/jump-right/1.png";
+    image = new Image();
+    image.src = "images/astronaut/jump-left-pack/1.png";
+    image = new Image();
+    image.src = "images/astronaut/jump-right-pack/1.png";
+}

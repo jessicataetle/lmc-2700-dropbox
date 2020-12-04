@@ -69,6 +69,9 @@ function start() {
 function goToLevel1() {
     document.body.style.backgroundImage = "url(" + level1Background.src + ")"
     stateMachine.stateMachine(state.GAME, true)
+    var audio = new Audio("./audio/DropBox\ Rough.mp3")
+    audio.loop = true;
+    audio.play();
     initLevel1();
 }
 

@@ -89,7 +89,7 @@ function initLevel1() {
     onBack = true;
     dropBox = false;
     jumping = false;
-    levelGroundImage = createImage("./ground-tiles/texture-moon01.png");
+    levelGroundImage = createImage("./ground-tiles/texture-moon02.png");
     portalImage = createImage("./portal.png");
     initNewLevel(level1Plan)
     portal = new componentFromImage(75, 125, canvasWidth - 75, canvasHeight - 175, portalImage)
@@ -124,7 +124,7 @@ function initLevel3() {
     level2 = false;
     level3 = true;
     activePowerup = false;
-    levelGroundImage = createImage("./ground-tiles/texture-moon02.png")
+    levelGroundImage = createImage("./ground-tiles/texture-moon01.png")
     initNewLevel3(level3Plan);
     portal = new componentFromImage(45, 75, canvasWidth - 45, canvasHeight - 105, portalImage)
     myGameArea.clear();

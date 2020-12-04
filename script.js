@@ -55,6 +55,7 @@ function onLoad() {
     level1Background = createImage("GameDesign_LVL01_4k.png")
     level2Background = createImage("Lvl-02-background.png")
     level3Background = createImage("Lvl-03-background.png")
+    levelGroundImage = createImage("./ground-tiles/texture-moon02.png");
     for(var i = 1; i < 66; i++) {
         if (i < 10) {
             startScreenImages.push(createImage("./startscreen/StartScreen_adjusted200" + i + ".png"))
@@ -143,7 +144,6 @@ function initLevel1() {
     dropBox = false;
     jumping = false;
     portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, new Image(), "./images/portal/red/001.png")
-    levelGroundImage = createImage("./ground-tiles/texture-moon02.png");
     initNewLevel(level1Plan)
     myGameArea.clear();
     drawLevels();

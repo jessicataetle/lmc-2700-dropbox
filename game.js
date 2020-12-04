@@ -14,9 +14,11 @@ var level = [];
 var powerups = [];
 var bushes = [];
 var activePowerup = false;
+var powerUpImage;
 var activePowerupBlock;
-var img = new Image();
-var imgB = new Image();
+var levelGroundImage;
+var level2GroundImage;
+var level2GroundImage1;
 let level1Plan =
 ".................." +
 ".................." +
@@ -34,35 +36,35 @@ let level2Plan =
 ".................." +
 ".................." +
 ".................." +
-"####.............." +
-"####.............." +
-"####............*." +
-"####.............." +
-"#######..........." +
-"@..............###" +
-"...............###" +
-"...............###" +
-"##################"
+"###..............." +
+"&&&..............." +
+"&&&............*.." +
+"&&&..............." +
+"&&&###............" +
+"@.............####" +
+"..............&&&&" +
+"..............&&&&" +
+"##############&&&&"
 let level3Plan =
 ".......................*......" +
 ".............................." +
 ".............................." +
 "...............###########...." +
-"...........###############...." +
-"...........###############...." +
-"...........###############...." +
-"...........###############...." +
-"...........###############...." +
-".......###################...." +
-".......###################...." +
-"....*..###################...." +
-".......###################...." +
-".......###################...." +
-"...#######################...." +
-"...#######################...." +
-"@..#######################...." +
+"...........#####~~####~~##...." +
+"...........#~####~##~###~#...." +
+"...........#~##~###~######...." +
+"...........#####~#####~~##...." +
+"...........####~~##~##~~##...." +
+".......##########~######~#...." +
+".......###~###~##~#~~#####...." +
+"....*..################~##...." +
+".......##~##~#~###~#######...." +
+".......######~~###~###~###...." +
+"...#####~#########~#######...." +
+"...##~#################~##...." +
+"@..#####~~~~~~~~~~~~~#####...." +
 "...~~~~~~~~~~~~~~~~~~~~~~~...." +
-"...~~~~~~~~~~~~~~~~~~~~~~~...." +
+"...~~~~~~~#########~~~~~~~...." +
 "##############################"
 var myGameArea = {    
    canvas : document.createElement("canvas"),  
@@ -83,12 +85,14 @@ function initNewLevel(levelPlan) {
     var row = 0;
     for(var i = 0; i < levelPlan.length; i++) {
         if(levelPlan.charAt(i) == '#') {
-            level.push(new component(50, 50, "purple", col, row, false))
+            level.push(new componentFromImage(50, 50, col, row, levelGroundImage))
         } else if (levelPlan.charAt(i) == '@') {
             astronaut = null;
             astronaut = new Astronaut(87.5, 150, col, row, new Image(), "images/astronaut/walk-right-pack/1.png");
         } else if (levelPlan.charAt(i) == '*') {
-            powerups.push(new component(100, 100, "green", col, row))
+            powerups.push(new componentFromImage(100, 100, col, row, powerUpImage))
+        } else if (levelPlan.charAt(i) === '&') {
+            level.push(new componentFromImage(50, 50, col, row, level2GroundImage))
         }
         
         if(col == canvasWidth - 50) {
@@ -104,16 +108,17 @@ function initNewLevel3(levelPlan) {
     level = []
     var col = 0;
     var row = 0;
+    var tallGrassImage = createImage("./ground-tiles/texture-moon01-hollow.png")
     for(var i = 0; i < levelPlan.length; i++) {
         if(levelPlan.charAt(i) == '#') {
-            level.push(new component(30, 30, "purple", col, row, false))
+            level.push(new componentFromImage(30, 30, col, row, levelGroundImage))
         } else if (levelPlan.charAt(i) == '@') {
             astronaut = null;
             astronaut = new Astronaut(60, 90, col, row, new Image(), "images/astronaut/idle-pack.png")
         } else if (levelPlan.charAt(i) == '*') {
-            powerups.push(new component(60, 60, "green", col, row))
+            powerups.push(new componentFromImage(60, 60, col, row, powerUpImage))
         } else if (levelPlan.charAt(i) == '~') {
-            bushes.push(new componentI(30, 30, col, row, imgB, "./tall_grass1.png"))
+            bushes.push(new componentFromImage(30, 30, col, row, tallGrassImage))
         }
         if(col == canvasWidth - 30) {
             col = 0;
@@ -158,12 +163,16 @@ var checkKey = {
             if(onBack) {
                 dropBackpack();
             } else {
-                pickUpBackpack();
+                if(backpack.y == astronaut.y &&
+                    ((astronaut.x - (backpack.x + backpack.width) < 5 && astronaut.x - (backpack.x + backpack.width) > -1) ||
+                    (backpack.x - (astronaut.x + astronaut.width) < 5 && backpack.x - (astronaut.x + astronaut.width) > -1))) {
+                    pickUpBackpack();
+                }
             }
         }
         if (e.keyCode == '90' && e.type == "keydown" && !jumping && !onBack) {
             if (activePowerup) {
-                moveBackpackToAstronaut();
+                pickUpBackpack();
                 activePowerup = false;
             }
         }
@@ -196,24 +205,20 @@ function dropBackpack() {
 }
 
 function pickUpBackpack() {
-    if(backpack.y == astronaut.y &&
-        ((astronaut.x - (backpack.x + backpack.width) < 5 && astronaut.x - (backpack.x + backpack.width) > -1) ||
-        (backpack.x - (astronaut.x + astronaut.width) < 5 && backpack.x - (astronaut.x + astronaut.width) > -1))) {
-            onBack = true;
-            if (!level3) {
-                astronaut.width = 100;
-                astronaut.height = 150;
-                astronaut.y = astronaut.y - 50; 
-            } else {
-                astronaut.width = 60;
-                astronaut.height = 90;
-                astronaut.y = astronaut.y - 30; 
-            }
-            if(!dropBox) {
-                level.pop();
-                findSpot();
-            }
-    } 
+    onBack = true;
+    if (!level3) {
+        astronaut.width = 100;
+        astronaut.height = 150;
+        astronaut.y = astronaut.y - 50; 
+    } else {
+        astronaut.width = 60;
+        astronaut.height = 90;
+        astronaut.y = astronaut.y - 30; 
+    }
+    if(!dropBox) {
+        level.pop();
+        findSpot();
+    }
     primeImages();
 }
 
@@ -275,7 +280,6 @@ function updateVelAstronaut() {
 
 function checkCollisionLeft() {
      for(var i = 0; i < level.length; i++) {
-//        if(genericCollision(astronaut.x + (velX - astronaut.velX), level[i].x, astronaut.width, level[i].width) && genericCollision(astronaut.y, level[i].y, astronaut.height, level[i].height)) {
          if (collision(astronaut.x + (velX - astronaut.velX), astronaut.y, astronaut.width, astronaut.height, level[i].x, level[i].y, level[i].width, level[i].height)) {
             return true;
         }
@@ -285,7 +289,6 @@ function checkCollisionLeft() {
 
 function checkCollisionRight() {
     for(var i = 0; i < level.length; i++) {
-//        if(genericCollision((velX + astronaut.velX) + astronaut.x, level[i].x, astronaut.width, level[i].width) && genericCollision(astronaut.y, level[i].y, astronaut.height, level[i].height)) {
         if(collision(astronaut.x + (velX + astronaut.velX), astronaut.y, astronaut.width, astronaut.height, level[i].x, level[i].y, level[i].width, level[i].height)) {
             return true;
         } 
@@ -320,7 +323,7 @@ function powerUpCollision() {
          if (collision(astronaut.x, astronaut.y, astronaut.width, astronaut.height, powerups[i].x, powerups[i].y, powerups[i].width, powerups[i].height)) {
              powerups.splice(i,1)
              activePowerup = true;
-             activePowerupBlock = new component(50, 50, "green", canvasWidth - 50, 0)
+             activePowerupBlock = new componentFromImage(50, 50, canvasWidth - 50, 0, powerUpImage)
          }
     }
 }

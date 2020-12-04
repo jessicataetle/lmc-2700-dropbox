@@ -4,7 +4,6 @@ canvas {
 }
 
 body {
-    background-image: url('GameDesign_LVL01_4k.png');
     background-repeat: no-repeat;
     background-size: cover;
     display: flex;

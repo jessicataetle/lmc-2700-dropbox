@@ -8,15 +8,23 @@ var packText = "-pack";
 var stateText = "walk-";
 var jumpFrameStack = 0;
 primeImages();
-
-//import initLevel1 from './game.js'
 const state = {
     MENU: 'menu',
     GAME: 'game',
+    END: 'end',
 }
 var level1 = true;
 var level2 = false;
 var level3 = false;
+var level1Background;
+var level2Background;
+var level3Background;
+var startScreenImages = [];
+var endScreenImages = [];
+var endscreen;
+var startscreen;
+var endScreenCount = 0
+var startscreenCount = 0;
 
 //state machine
 var stateMachine = {
@@ -30,7 +38,10 @@ var stateMachine = {
                 this.interval = setInterval(game, 20)
                 break;
             case 'menu':
-                this.interval = setInterval(start, 20)
+                this.interval = setInterval(start, 40)
+                break;
+            case 'end':
+                this.interval = setInterval(end, 40)
                 break;
         }
     }
@@ -40,18 +51,37 @@ var stateMachine = {
 function onLoad() {
     myGameArea.setup();
     stateMachine.stateMachine(state.MENU, false)
-    myGameArea.canvas.addEventListener('click',  goToLevel1, { once: true })
-    //@matthew start game component should be instantiated here
+    document.addEventListener('click',  goToLevel1, { once: true })
+    level1Background = createImage("GameDesign_LVL01_4k.png")
+    level2Background = createImage("Lvl-02-background.png")
+    level3Background = createImage("Lvl-03-background.png")
+    for(var i = 1; i < 66; i++) {
+        if (i < 10) {
+            startScreenImages.push(createImage("./startscreen/StartScreen_adjusted200" + i + ".png"))
+        } else {
+            startScreenImages.push(createImage("./startscreen/StartScreen_adjusted20" + i + ".png"))
+        }
+    }
+    createEndScreenImages()
 }
 
 //start loop
 function start() {
-    //@matthew start game animation
+    if(startscreenCount < startScreenImages.length - 1) {
+        document.body.style.backgroundImage = "url(" + startScreenImages[startscreenCount].src + ")"
+        startscreenCount++;
+    } else {
+        startscreenCount = 0;
+    }
 }
 
 //start -> game
 function goToLevel1() {
+    document.body.style.backgroundImage = "url(" + level1Background.src + ")"
     stateMachine.stateMachine(state.GAME, true)
+    var audio = new Audio("./audio/DropBox\ Rough.mp3")
+    audio.loop = true;
+    audio.play();
     initLevel1();
 }
 
@@ -67,13 +97,23 @@ function game() {
     if (dropBox) {
         inBackpackBounds();
     }
-    //@matthew I think the best way to do this is make animation functions that change the source of the image and call them here - also astronaut animation can be based on velocity (ex: negative velX means astronaut is going left). Also you can change the src of an image by doing: {variable name}.src = {new source}
     updatePortalImageLoop();
     updateAstronautImage();
+    if(collision(astronaut.x, astronaut.y, astronaut.width, astronaut.height, portal.x, portal.y, portal.width, portal.height)) {
+        if(level1) {
+            document.body.style.backgroundImage = "url(" + level2Background.src + ")"
+            initLevel2();
+        }else if (level2) {
+            document.body.style.backgroundImage = "url(" + level3Background.src + ")"
+            initLevel3();
+        } else if (level3) {
+            stateMachine.stateMachine(state.END, true)
+        }
+    }
     myGameArea.clear();
     drawLevels();
     drawPowerUps();
-    if(dropBox) {
+    if (dropBox) {
         backpack.draw();
     }
     astronaut.draw();
@@ -84,27 +124,29 @@ function game() {
     if (level3) {
         drawBushes();
     }
-    if(collision(astronaut.x, astronaut.y, astronaut.width, astronaut.height, portal.x, portal.y, portal.width, portal.height)) {
-        if(level1) {
-            initLevel2();
-        }else if (level2) {
-            initLevel3();
-        }
-    }
 }
 
+function end() {
+    myGameArea.clear();
+    if(endScreenCount < endScreenImages.length - 1) {
+        document.body.style.backgroundImage = "url(" + endScreenImages[endScreenCount].src + ")"
+        endScreenCount++;
+    } else {
+        endScreenCount = 0;
+    }
+}
+ 
 //initializes game
 function initLevel1() {
     primeImages();
     onBack = true;
     dropBox = false;
     jumping = false;
-    myGameArea.clear();
-    //@matthew instantiate astronaut here
-    //@matthew example of instantiating here w/ portal 
-    portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, img, "./images/portal/red/001.png")
+    portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, new Image(), "./images/portal/red/001.png")
+    levelGroundImage = createImage("./ground-tiles/texture-moon02.png");
     initNewLevel(level1Plan)
-    updateAstronautImage();
+    myGameArea.clear();
+    drawLevels();
     astronaut.draw();
     portal.draw();
 }
@@ -117,11 +159,14 @@ function initLevel2() {
     level1 = false;
     level2 = true;
     activePowerup = false;
-    myGameArea.clear();
-    initNewLevel(level2Plan);
-    drawLevels();
     portalColor = "green";
-    portal = new componentI(75, 125, 0, 25, img, "./images/portal/green/001.png")
+    portal = new componentI(75, 125, 0, 25, new Image(), "./images/portal/green/001.png")
+    powerUpImage = createImage("powerup.png")
+    levelGroundImage = createImage("./ground-tiles/2.png");
+    level2GroundImage = createImage("./ground-tiles/Lvl-02-tile.png")
+    initNewLevel(level2Plan);
+    myGameArea.clear();
+    drawLevels();
     portal.draw();
     astronaut.draw();
 }
@@ -134,11 +179,12 @@ function initLevel3() {
     level2 = false;
     level3 = true;
     activePowerup = false;
-    myGameArea.clear();
+    levelGroundImage = createImage("./ground-tiles/texture-moon01.png")
     initNewLevel3(level3Plan);
-    drawLevels();
     portalColor = "blue";
-    portal = new componentI(45, 75, canvasWidth - 45, canvasHeight - 105, img, "./images/portal/blue/001.png")
+    portal = new componentI(45, 75, canvasWidth - 45, canvasHeight - 105, new Image(), "./images/portal/blue/001.png")
+    myGameArea.clear();
+    drawLevels();
     portal.draw();
     astronaut.draw();
 }
@@ -222,5 +268,17 @@ function primeImages() {
     image = new Image();
     image.src = "images/astronaut/jump-left-pack/1.png";
     image = new Image();
-    image.src = "images/astronaut/jump-right-pack/1.png";
+    image.src = "images/astronaut/jump-right-pack/1.png";    
+}
+
+function createEndScreenImages() {
+    for(var i = 0; i < 518; i++) {
+        if (i < 10) {
+            endScreenImages.push(createImage("./endscreen/EndScreen00" + i + ".png"))
+        } else if ( i < 100) {
+            endScreenImages.push(createImage("./endscreen/EndScreen0" + i + ".png"))
+        } else {
+            endScreenImages.push(createImage("./endscreen/EndScreen" + i + ".png"))
+        }
+    }
 }

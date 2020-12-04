@@ -88,7 +88,7 @@ function initNewLevel(levelPlan) {
             level.push(new componentFromImage(50, 50, col, row, levelGroundImage))
         } else if (levelPlan.charAt(i) == '@') {
             astronaut = null;
-            astronaut = new Astronaut(100, 150, "blue", col, row)
+            astronaut = new Astronaut(87.5, 150, col, row, new Image(), "images/astronaut/walk-right-pack/1.png");
         } else if (levelPlan.charAt(i) == '*') {
             powerups.push(new componentFromImage(100, 100, col, row, powerUpImage))
         } else if (levelPlan.charAt(i) === '&') {
@@ -102,6 +102,7 @@ function initNewLevel(levelPlan) {
             col += 50;
         }
     }
+    primeImages();
 }
 function initNewLevel3(levelPlan) {
     level = []
@@ -113,7 +114,7 @@ function initNewLevel3(levelPlan) {
             level.push(new componentFromImage(30, 30, col, row, levelGroundImage))
         } else if (levelPlan.charAt(i) == '@') {
             astronaut = null;
-            astronaut = new Astronaut(60, 90, "blue", col, row)
+            astronaut = new Astronaut(60, 90, col, row, new Image(), "images/astronaut/idle-pack.png")
         } else if (levelPlan.charAt(i) == '*') {
             powerups.push(new componentFromImage(60, 60, col, row, powerUpImage))
         } else if (levelPlan.charAt(i) == '~') {
@@ -126,6 +127,7 @@ function initNewLevel3(levelPlan) {
             col += 30;
         }
     }
+    primeImages();
 }
 
 function inBackpackBounds() {
@@ -198,7 +200,7 @@ function dropBackpack() {
         astronaut.height = 60
         astronaut.y = astronaut.y + 30
     }
-    backpack = new component(astronaut.width, astronaut.height, "orange", astronaut.x, astronaut.y, false)
+    backpack = new componentI(astronaut.width, astronaut.height, astronaut.x, astronaut.y, new Image(), "images/astronaut/pack.png");
     dropBox = true
 }
 
@@ -217,6 +219,7 @@ function pickUpBackpack() {
         level.pop();
         findSpot();
     }
+    primeImages();
 }
 
 function findSpot() {
@@ -234,7 +237,7 @@ function findSpot() {
 
 function moveBackpackToAstronaut() {
     level.pop()
-    backpack = new component(astronaut.width, astronaut.height, "orange", astronaut.x, astronaut.y, false)
+    backpack = new componentI(astronaut.width, astronaut.height, astronaut.x, astronaut.y, new Image(), "images/astronaut/pack.png");
     dropBox = true
 }
 

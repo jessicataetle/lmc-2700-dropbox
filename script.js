@@ -1,3 +1,13 @@
+var portalSpriteNum = 1;
+var portalSpriteTime = 5;
+var portalColor = "red";
+var astroSpriteTime = 10;
+var astroSpriteNum = 0;
+var astroSpriteDirection = "right";
+var packText = "-pack";
+var stateText = "walk-";
+var jumpFrameStack = 0;
+primeImages();
 const state = {
     MENU: 'menu',
     GAME: 'game',
@@ -16,7 +26,7 @@ var startscreen;
 var endScreenCount = 0
 var startscreenCount = 0;
 
-//state machins
+//state machine
 var stateMachine = {
     interval: '',
     stateMachine: function(state, change) {
@@ -87,6 +97,8 @@ function game() {
     if (dropBox) {
         inBackpackBounds();
     }
+    updatePortalImageLoop();
+    updateAstronautImage();
     if(collision(astronaut.x, astronaut.y, astronaut.width, astronaut.height, portal.x, portal.y, portal.width, portal.height)) {
         if(level1) {
             document.body.style.backgroundImage = "url(" + level2Background.src + ")"
@@ -98,7 +110,6 @@ function game() {
             stateMachine.stateMachine(state.END, true)
         }
     }
-    //@matthew I think the best way to do this is make animation functions that change the source of the image and call them here - also astronaut animation can be based on velocity (ex: negative velX means astronaut is going left). Also you can change the src of an image by doing: {variable name}.src = {new source}
     myGameArea.clear();
     drawLevels();
     drawPowerUps();
@@ -127,13 +138,13 @@ function end() {
  
 //initializes game
 function initLevel1() {
+    primeImages();
     onBack = true;
     dropBox = false;
     jumping = false;
+    portal = new componentI(75, 125, canvasWidth - 75, canvasHeight - 175, new Image(), "./images/portal/red/001.png")
     levelGroundImage = createImage("./ground-tiles/texture-moon02.png");
-    portalImage = createImage("./portal.png");
     initNewLevel(level1Plan)
-    portal = new componentFromImage(75, 125, canvasWidth - 75, canvasHeight - 175, portalImage)
     myGameArea.clear();
     drawLevels();
     astronaut.draw();
@@ -141,17 +152,19 @@ function initLevel1() {
 }
 
 function initLevel2() {
+    primeImages();
     onBack = true;
     dropBox = false;
     jumping = false;
     level1 = false;
     level2 = true;
     activePowerup = false;
+    portalColor = "green";
+    portal = new componentI(75, 125, 0, 25, new Image(), "./images/portal/green/001.png")
     powerUpImage = createImage("powerup.png")
     levelGroundImage = createImage("./ground-tiles/2.png");
     level2GroundImage = createImage("./ground-tiles/Lvl-02-tile.png")
     initNewLevel(level2Plan);
-    portal = new componentFromImage(75, 125, 0, 25, portalImage)
     myGameArea.clear();
     drawLevels();
     portal.draw();
@@ -159,6 +172,7 @@ function initLevel2() {
 }
 
 function initLevel3() {
+    primeImages();
     onBack = true;
     dropBox = false;
     jumping = false;
@@ -167,11 +181,94 @@ function initLevel3() {
     activePowerup = false;
     levelGroundImage = createImage("./ground-tiles/texture-moon01.png")
     initNewLevel3(level3Plan);
-    portal = new componentFromImage(45, 75, canvasWidth - 45, canvasHeight - 105, portalImage)
+    portalColor = "blue";
+    portal = new componentI(45, 75, canvasWidth - 45, canvasHeight - 105, new Image(), "./images/portal/blue/001.png")
     myGameArea.clear();
     drawLevels();
     portal.draw();
     astronaut.draw();
+}
+
+function updateAstronautImage() {    
+    stateText = "walk-";
+    if (onBack) {
+        packText = "-pack";
+    } else {
+        packText = "";
+    }
+    if (!checkKey.left && !checkKey.right && ! checkKey.up) {
+        astroSpriteNum = 1;
+    } else if (checkKey.left || checkKey.right) {// execute walking left thing
+        if (checkKey.left) {
+            astroSpriteDirection = "left";
+        } else {
+            astroSpriteDirection = "right";
+        }
+        if (astroSpriteTime >= 0) {
+            astroSpriteTime--;
+        } else {
+            astroSpriteNum++;
+            astroSpriteTime = 3;
+            if (astroSpriteNum > 9) {
+                astroSpriteNum = 1;
+            }
+        }
+    }
+    if (jumping) {
+        jumpFrameStack++;
+        if (jumpFrameStack > 2) {
+            stateText = "jump-"
+            astroSpriteNum = 1;
+        }
+    } else {
+        jumpFrameStack = 0;
+    }
+
+    astronaut.img.src = "images/astronaut/" + stateText + astroSpriteDirection + packText + "/" + astroSpriteNum + ".png";
+}
+
+function updatePortalImageLoop() {
+    portalSpriteTime--;
+    if (portalSpriteTime < 0) {
+        portalSpriteNum++;
+        if (portalSpriteNum > 4) {
+            portalSpriteNum = 1;
+        }
+        portalSpriteTime = 10;
+    }
+    portal.img.src = "images/portal/" + portalColor + "/00" + portalSpriteNum + ".png";
+}
+
+function primeImages() {
+    var image;
+    for (var i = 0; i < 9; i++) {
+        image = new Image();
+        image.src = "images/astronaut/walk-left/" + (i + 1) + ".png";
+    }
+    for (var i = 0; i < 9; i++) {
+        image = new Image();
+        image.src = "images/astronaut/walk-right/" + (i + 1) + ".png";
+    }
+    for (var i = 0; i < 9; i++) {
+        image = new Image();
+        image.src = "images/astronaut/walk-left-pack/" + (i + 1) + ".png";
+    }
+    for (var i = 0; i < 9; i++) {
+        image = new Image();
+        image.src = "images/astronaut/walk-right-pack/" + (i + 1) + ".png";
+    }
+    for (var i = 0; i < 4; i++) {
+        image = new Image();
+        image.src = "images/portal/" + portalColor + "/00" + (i + 1) + ".png";
+    }
+    image = new Image();
+    image.src = "images/astronaut/jump-left/1.png";
+    image = new Image();
+    image.src = "images/astronaut/jump-right/1.png";
+    image = new Image();
+    image.src = "images/astronaut/jump-left-pack/1.png";
+    image = new Image();
+    image.src = "images/astronaut/jump-right-pack/1.png";    
 }
 
 function createEndScreenImages() {

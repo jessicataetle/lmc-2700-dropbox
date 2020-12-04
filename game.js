@@ -14,9 +14,11 @@ var level = [];
 var powerups = [];
 var bushes = [];
 var activePowerup = false;
+var powerUpImage;
 var activePowerupBlock;
-var img = new Image();
-var imgB = new Image();
+var levelGroundImage;
+var level2GroundImage;
+var level2GroundImage1;
 let level1Plan =
 ".................." +
 ".................." +
@@ -34,35 +36,35 @@ let level2Plan =
 ".................." +
 ".................." +
 ".................." +
-"####.............." +
-"####.............." +
-"####............*." +
-"####.............." +
-"#######..........." +
-"@..............###" +
-"...............###" +
-"...............###" +
-"##################"
+"###..............." +
+"&&&..............." +
+"&&&............*.." +
+"&&&..............." +
+"&&&###............" +
+"@.............####" +
+"..............&&&&" +
+"..............&&&&" +
+"##############&&&&"
 let level3Plan =
 ".......................*......" +
 ".............................." +
 ".............................." +
 "...............###########...." +
-"...........###############...." +
-"...........###############...." +
-"...........###############...." +
-"...........###############...." +
-"...........###############...." +
-".......###################...." +
-".......###################...." +
-"....*..###################...." +
-".......###################...." +
-".......###################...." +
-"...#######################...." +
-"...#######################...." +
-"@..#######################...." +
+"...........#####~~####~~##...." +
+"...........#~####~##~###~#...." +
+"...........#~##~###~######...." +
+"...........#####~#####~~##...." +
+"...........####~~##~##~~##...." +
+".......##########~######~#...." +
+".......###~###~##~#~~#####...." +
+"....*..################~##...." +
+".......##~##~#~###~#######...." +
+".......######~~###~###~###...." +
+"...#####~#########~#######...." +
+"...##~#################~##...." +
+"@..#####~~~~~~~~~~~~~#####...." +
 "...~~~~~~~~~~~~~~~~~~~~~~~...." +
-"...~~~~~~~~~~~~~~~~~~~~~~~...." +
+"...~~~~~~~#########~~~~~~~...." +
 "##############################"
 var myGameArea = {    
    canvas : document.createElement("canvas"),  
@@ -83,12 +85,14 @@ function initNewLevel(levelPlan) {
     var row = 0;
     for(var i = 0; i < levelPlan.length; i++) {
         if(levelPlan.charAt(i) == '#') {
-            level.push(new component(50, 50, "purple", col, row, false))
+            level.push(new componentFromImage(50, 50, col, row, levelGroundImage))
         } else if (levelPlan.charAt(i) == '@') {
             astronaut = null;
             astronaut = new Astronaut(100, 150, "blue", col, row)
         } else if (levelPlan.charAt(i) == '*') {
-            powerups.push(new component(100, 100, "green", col, row))
+            powerups.push(new componentFromImage(100, 100, col, row, powerUpImage))
+        } else if (levelPlan.charAt(i) === '&') {
+            level.push(new componentFromImage(50, 50, col, row, level2GroundImage))
         }
         
         if(col == canvasWidth - 50) {
@@ -103,16 +107,17 @@ function initNewLevel3(levelPlan) {
     level = []
     var col = 0;
     var row = 0;
+    var tallGrassImage = createImage("./ground-tiles/texture-moon01-hollow.png")
     for(var i = 0; i < levelPlan.length; i++) {
         if(levelPlan.charAt(i) == '#') {
-            level.push(new component(30, 30, "purple", col, row, false))
+            level.push(new componentFromImage(30, 30, col, row, levelGroundImage))
         } else if (levelPlan.charAt(i) == '@') {
             astronaut = null;
             astronaut = new Astronaut(60, 90, "blue", col, row)
         } else if (levelPlan.charAt(i) == '*') {
-            powerups.push(new component(60, 60, "green", col, row))
+            powerups.push(new componentFromImage(60, 60, col, row, powerUpImage))
         } else if (levelPlan.charAt(i) == '~') {
-            bushes.push(new componentI(30, 30, col, row, imgB, "./tall_grass1.png"))
+            bushes.push(new componentFromImage(30, 30, col, row, tallGrassImage))
         }
         if(col == canvasWidth - 30) {
             col = 0;
@@ -315,7 +320,7 @@ function powerUpCollision() {
          if (collision(astronaut.x, astronaut.y, astronaut.width, astronaut.height, powerups[i].x, powerups[i].y, powerups[i].width, powerups[i].height)) {
              powerups.splice(i,1)
              activePowerup = true;
-             activePowerupBlock = new component(50, 50, "green", canvasWidth - 50, 0)
+             activePowerupBlock = new componentFromImage(50, 50, canvasWidth - 50, 0, powerUpImage)
          }
     }
 }

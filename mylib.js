@@ -1,3 +1,9 @@
+function createImage(src) {
+    var img = new Image();
+    img.src = src;
+    return img
+}
+
 function component(width, height, color, x, y, isActive) {  
     this.width = width;  
     this.height = height;  
@@ -11,7 +17,18 @@ function component(width, height, color, x, y, isActive) {
     }
 }
 
-//@matthew everything else image function
+function componentFromImage(width, height, x, y, img) {  
+    this.width = width;  
+    this.height = height;  
+    this.x = x;  
+    this.y = y;
+    this.img = img;
+    this.draw = function() {
+        ctx = myGameArea.context;   
+        ctx.drawImage(img, this.x, this.y, this.width, this.height);  
+    }
+}
+
 function componentI(width, height, x, y, img, src) {  
     this.width = width;  
     this.height = height;  
